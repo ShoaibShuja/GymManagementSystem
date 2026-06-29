@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 2: Authentication flow and protected dashboard shell.
+Phase 3: Membership plans and member management MVP.
 
 ## Completed Setup
 
@@ -27,6 +27,12 @@ Phase 2: Authentication flow and protected dashboard shell.
 - Placeholder pages added for Dashboard, Members, Trainers, Plans, Payments, Attendance, Settings, and Users.
 - Role-aware navigation added so staff users do not see admin-only links.
 - Admin-only settings routes are protected server-side.
+- Membership Plans page now lists plans, creates plans, edits plans, and deactivates plans instead of hard deleting them.
+- Member Management page now lists members, adds members, edits members, and allows admin-only member deletion.
+- Member deletion now requires a confirmation popup before the record is permanently deleted.
+- React Hook Form and Zod validation added for membership plan and member forms.
+- Member form calculates the membership end date from the selected plan duration and membership start date.
+- TanStack Query is used for plans and members data fetching, loading skeletons, error states, and mutation invalidation.
 
 ## Installed Packages
 
@@ -78,11 +84,13 @@ Phase 2: Authentication flow and protected dashboard shell.
 
 ## Next Step
 
-Build the first real feature workflow: member management CRUD with Zod validation, React Hook Form, Supabase queries, and table search/filter UI.
+Build trainer management and trainer assignment workflows, then connect member search and filters to real table controls.
 
 ## Known Limitations
 
 - Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
 - Dashboard metric cards are placeholders and do not query live records yet.
-- Feature pages are protected placeholders only; CRUD workflows are not built yet.
+- Dashboard metric cards, trainers, payments, and attendance pages are still placeholders.
 - A user must have a matching `profiles` row before they can access the dashboard.
+- Member search and plan search inputs are placeholders; real filtering is a future step.
+- Payment logic was intentionally not added in this step.
