@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-Membership Plans, Members, and Trainers now have real tables and forms. Payments and attendance are still placeholders and will be added in the next phases.
+Membership Plans, Members, Trainers, and Payments now have real tables and forms. Attendance is still a placeholder and will be added in the next phase.
 
 ## Basic Project Organization
 
@@ -155,10 +155,34 @@ Removing an assignment only removes the trainer-member connection. It does not d
 
 ## Payments
 
-Payments are tracked manually. The system records whether a member paid for a month, the amount, the payment date, and notes.
+Payments are tracked manually. The system records whether a member paid for a month, the amount, the payment date, who recorded it, and notes.
 
 The app does not process online payments, charge cards, or connect to a payment gateway.
 
+To check who paid:
+
+1. Open Payments from the dashboard menu.
+2. Choose the month at the top of the page.
+3. Use the Paid, Unpaid, or All filter.
+4. Search by member name or phone if needed.
+
+The amount due comes from the member's selected membership plan. If the member is on the Monthly plan, the page uses the Monthly plan price. If no payment record exists for that member and month, the member is shown as Unpaid.
+
+To mark a member as paid:
+
+1. Open Payments.
+2. Choose the correct month.
+3. Find the member in the overview table.
+4. Click Mark paid.
+5. Add notes if needed.
+6. Save the payment.
+
+Marking as paid creates a manual payment record for that member and month. It does not collect money online.
+
+Payment history shows recent payment records across all months. It includes the member name, amount, payment month, payment date, staff member who recorded it, and notes.
+
+Admins can remove a payment record after confirming the action. Staff users can record payments and edit notes, but they do not see the remove payment action.
+
 ## Current Next Step
 
-The next step is to build payment tracking with monthly paid/unpaid records and manual mark-as-paid.
+The next step is to build basic attendance check-in and connect dashboard cards to live totals.
