@@ -660,7 +660,7 @@ export function TrainersView({ role }: { role: AppRole }) {
                         {assignedNames || "No members assigned"}
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex min-w-72 flex-wrap justify-end gap-2">
                           <Button
                             size="sm"
                             variant="outline"

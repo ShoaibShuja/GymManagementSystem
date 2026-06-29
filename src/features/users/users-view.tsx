@@ -170,7 +170,7 @@ export function UsersView({ currentProfileId }: { currentProfileId: string }) {
                         {format(parseISO(profile.created_at), "MMM d, yyyy")}
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end">
+                        <div className="flex min-w-32 justify-end">
                           <Select
                             disabled={isUpdating}
                             value={profile.role}

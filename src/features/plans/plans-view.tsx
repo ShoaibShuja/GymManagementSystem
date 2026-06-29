@@ -336,7 +336,7 @@ export function PlansView({ role }: { role: AppRole }) {
                     </TableCell>
                     {isAdmin && (
                       <TableCell>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex min-w-48 flex-wrap justify-end gap-2">
                           <Button
                             size="sm"
                             variant="outline"

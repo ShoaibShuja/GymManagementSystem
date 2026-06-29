@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 8: Role-based access finalized.
+Phase 9: Production UI polish completed.
 
 ## Completed Setup
 
@@ -74,6 +74,15 @@ Phase 8: Role-based access finalized.
 - Admin-only settings routes show a friendly access denied page if a staff user reaches them directly.
 - A follow-up RLS migration tightens database security so staff cannot write member rows or update attendance rows directly.
 - Auth helper utilities are available for current user, current profile, role checks, and admin requirements.
+- Production UI polish pass completed across login, dashboard, members, trainers, plans, payments, attendance, settings, and users.
+- Dashboard shell spacing, mobile header, sidebar active states, and page width are more consistent.
+- Login page now has a cleaner production-ready layout with a calm product summary on desktop and a focused sign-in flow on mobile.
+- Cards, dialogs, and tables were refined at the shared component level for cleaner radii, shadows, spacing, horizontal table scrolling, and mobile-friendly card actions.
+- Dialogs now have better mobile overflow handling for longer forms.
+- Table action groups now wrap more gracefully on smaller screens while preserving readable operational tables.
+- Settings is now a simple admin hub instead of an unfinished placeholder page.
+- The unused section placeholder component was removed.
+- Empty states, loading skeletons, errors, badges, confirmation dialogs, and toasts remain simple and consistent with shadcn/ui.
 
 ## Installed Packages
 

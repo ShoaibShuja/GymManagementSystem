@@ -33,9 +33,9 @@ export function DashboardShell({ children, profile }: DashboardShellProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r bg-sidebar px-4 py-5 lg:block">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r bg-sidebar/95 px-4 py-5 lg:block">
         <ShellBrand />
-        <nav className="mt-8 grid gap-1">
+        <nav className="mt-8 grid gap-1" aria-label="Main navigation">
           {items.map((item) => (
             <NavLink
               key={item.href}
@@ -51,15 +51,17 @@ export function DashboardShell({ children, profile }: DashboardShellProps) {
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-10 border-b bg-background/90 backdrop-blur">
+          <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3">
               <MobileNav items={items} profile={profile} pathname={pathname} />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-xs font-medium text-muted-foreground sm:text-sm">
                   Gym Management System
                 </p>
-                <p className="text-base font-semibold">Operations dashboard</p>
+                <p className="text-sm font-semibold sm:text-base">
+                  Operations dashboard
+                </p>
               </div>
             </div>
             <div className="hidden items-center gap-3 sm:flex">
@@ -68,7 +70,9 @@ export function DashboardShell({ children, profile }: DashboardShellProps) {
           </div>
         </header>
 
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="mx-auto max-w-[1440px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );
@@ -76,8 +80,8 @@ export function DashboardShell({ children, profile }: DashboardShellProps) {
 
 function ShellBrand() {
   return (
-    <Link href="/dashboard" className="flex items-center gap-3">
-      <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+    <Link href="/dashboard" className="flex items-center gap-3 rounded-md">
+      <div className="flex size-10 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
         <Dumbbell className="size-5" aria-hidden="true" />
       </div>
       <div>
@@ -103,8 +107,9 @@ function NavLink({
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/75 transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-        active && "bg-sidebar-accent text-sidebar-accent-foreground",
+        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/75 transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        active &&
+          "bg-sidebar-accent text-sidebar-accent-foreground shadow-xs ring-1 ring-sidebar-border",
       )}
     >
       <Icon className="size-4" aria-hidden="true" />
@@ -130,7 +135,7 @@ function ProfileSummary({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-md border bg-card p-3",
+        "flex items-center gap-3 rounded-md border bg-card p-3 shadow-sm",
         compact && "border-transparent bg-transparent p-0",
       )}
     >
@@ -164,7 +169,7 @@ function MobileNav({
           <span className="sr-only">Open navigation</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="left-4 top-4 max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] translate-x-0 translate-y-0 overflow-y-auto sm:max-w-sm">
+      <DialogContent className="left-4 top-4 max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] translate-x-0 translate-y-0 overflow-y-auto sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Navigation</DialogTitle>
           <DialogDescription>

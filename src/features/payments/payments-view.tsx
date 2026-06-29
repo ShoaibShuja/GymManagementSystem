@@ -525,7 +525,7 @@ export function PaymentsView({ role }: { role: AppRole }) {
                       {row.payment?.notes ?? "No notes"}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-2">
+                      <div className="flex min-w-32 flex-wrap justify-end gap-2">
                         {row.status === "unpaid" ? (
                           <Button
                             disabled={markPaidMutation.isPending}
@@ -615,7 +615,7 @@ export function PaymentsView({ role }: { role: AppRole }) {
                     </TableCell>
                     {isAdmin && (
                       <TableCell>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex min-w-44 flex-wrap justify-end gap-2">
                           <Button
                             size="sm"
                             variant="outline"

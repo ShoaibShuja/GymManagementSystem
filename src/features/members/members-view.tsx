@@ -685,7 +685,7 @@ export function MembersView({ role }: { role: AppRole }) {
                       {formatDate(member.membership_end_date)}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-2">
+                      <div className="flex min-w-64 flex-wrap justify-end gap-2">
                         <Button
                           size="sm"
                           variant="outline"
