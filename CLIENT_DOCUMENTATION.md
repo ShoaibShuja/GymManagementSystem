@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-Membership Plans, Members, Trainers, Payments, and Attendance now have real tables and forms.
+The Dashboard, Membership Plans, Members, Trainers, Payments, and Attendance now have real tables, forms, totals, alerts, and search/filter controls.
 
 ## Basic Project Organization
 
@@ -75,9 +75,35 @@ The dashboard has links for:
 
 On desktop, the navigation is shown in the sidebar. On mobile, it opens from the menu button at the top.
 
+## Dashboard Overview
+
+The Dashboard gives the owner and staff a quick daily summary.
+
+It shows:
+
+- Active members: members currently marked as Active.
+- Inactive members: members kept in the system but not currently active.
+- Expired members: members whose status is Expired.
+- Pending payments: members who do not have a paid payment record for the current month.
+- Collected this month: total manual payment amount recorded for the current month.
+- Expiring soon: members whose membership end date is inside the alert window.
+- Today's attendance: check-ins recorded today.
+
+These numbers are for daily business tracking. They are intentionally simple and do not include advanced charts or complex analytics.
+
+## Expiry Alerts
+
+The Dashboard shows a Membership Expiry Alerts list.
+
+By default, it shows members whose membership ends within 7 days. The alert days field can be changed on the Dashboard if the gym wants to look further ahead.
+
+Each alert shows the member name, phone number, plan, status, end date, and how many days are left. This helps staff follow up before a membership expires.
+
 ## Membership Plans
 
 Membership plans are the packages the gym sells, such as Monthly, Quarterly, or Yearly.
+
+The Plans page has a search box to find plans by name.
 
 To add a membership plan:
 
@@ -93,6 +119,8 @@ Staff users can view plans, but plan creation and editing are admin-only.
 ## Members
 
 The Members page shows each member's name, phone number, plan, status, join date, and membership end date.
+
+The Members page can be searched and filtered. Staff can search by member name or phone number, filter by member status, filter by membership plan, and filter by paid or unpaid payment state for a selected month.
 
 To add a member:
 
@@ -119,6 +147,8 @@ When an admin clicks Delete, the app asks for confirmation before permanently re
 ## Trainers
 
 The Trainers page stores trainer profiles and shows which members are assigned to each trainer.
+
+The Trainers page can be searched by trainer name or phone number. It can also be filtered by Active or Inactive status and by specialty.
 
 To add a trainer:
 
@@ -168,6 +198,8 @@ To check who paid:
 
 The amount due comes from the member's selected membership plan. If the member is on the Monthly plan, the page uses the Monthly plan price. If no payment record exists for that member and month, the member is shown as Unpaid.
 
+Payment filters include month selection, Paid/Unpaid/All status, and member name or phone search.
+
 To mark a member as paid:
 
 1. Open Payments.
@@ -201,6 +233,8 @@ The system records the member, check-in time, notes, and the logged-in user who 
 
 The Attendance page shows today's attendance and recent attendance history. The Members page also has an Attendance button on each member row so staff can quickly view that member's recent check-ins.
 
+Attendance history can be filtered by member name or phone number and by date. This helps staff find a specific visit without scanning the full history list.
+
 If a member is Inactive or Expired, the app shows a warning before check-in. The system still allows staff or admin to record the visit because each gym may handle exceptions differently.
 
 To prevent accidental double entries, the same member cannot be checked in again within 10 minutes.
@@ -209,4 +243,4 @@ Admins can delete attendance records after confirmation. Staff can record and vi
 
 ## Current Next Step
 
-The next step is to connect dashboard cards to live totals and add real search/filter controls where placeholders remain.
+The next step is to build the admin user management page so the gym owner can manage staff profiles and roles from inside the app.

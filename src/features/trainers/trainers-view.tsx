@@ -75,6 +75,8 @@ const trainersQueryKey = ["trainers"] as const;
 const trainerAssignmentsQueryKey = ["trainer-member-assignments"] as const;
 const assignableMembersQueryKey = ["members", "assignable"] as const;
 
+type TrainerStatusFilter = "all" | Trainer["status"];
+
 async function ensureAction(result: { ok: boolean; error?: string }) {
   if (!result.ok) {
     throw new Error(result.error ?? "The action failed.");
@@ -407,6 +409,9 @@ export function TrainersView({ role }: { role: AppRole }) {
   const [assignmentTrainer, setAssignmentTrainer] = useState<Trainer | null>(
     null,
   );
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<TrainerStatusFilter>("all");
+  const [specialtyFilter, setSpecialtyFilter] = useState("all");
 
   const trainersQuery = useQuery({
     queryKey: trainersQueryKey,
@@ -493,8 +498,39 @@ export function TrainersView({ role }: { role: AppRole }) {
     onError: (error) => toast.error(error.message),
   });
 
-  const trainers = trainersQuery.data ?? [];
+  const trainers = useMemo(
+    () => trainersQuery.data ?? [],
+    [trainersQuery.data],
+  );
   const members = membersQuery.data ?? [];
+  const specialties = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          trainers
+            .map((trainer) => trainer.specialty?.trim())
+            .filter((specialty): specialty is string => Boolean(specialty)),
+        ),
+      ).sort((a, b) => a.localeCompare(b)),
+    [trainers],
+  );
+  const filteredTrainers = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return trainers.filter((trainer) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        trainer.name.toLowerCase().includes(normalizedSearch) ||
+        (trainer.phone ?? "").toLowerCase().includes(normalizedSearch);
+      const matchesStatus =
+        statusFilter === "all" || trainer.status === statusFilter;
+      const matchesSpecialty =
+        specialtyFilter === "all" ||
+        trainer.specialty?.trim() === specialtyFilter;
+
+      return matchesSearch && matchesStatus && matchesSpecialty;
+    });
+  }, [search, specialtyFilter, statusFilter, trainers]);
 
   return (
     <div className="space-y-4">
@@ -527,12 +563,44 @@ export function TrainersView({ role }: { role: AppRole }) {
           <CardAction>
             <Input
               className="w-56"
-              disabled
-              placeholder="Search trainers coming soon"
+              placeholder="Search name or phone"
+              value={search}
+              onChange={(event) => setSearch(event.currentTarget.value)}
             />
           </CardAction>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Select
+              value={statusFilter}
+              onValueChange={(value) =>
+                setStatusFilter(value as TrainerStatusFilter)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All specialties</SelectItem>
+                {specialties.map((specialty) => (
+                  <SelectItem key={specialty} value={specialty}>
+                    {specialty}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {trainersQuery.isLoading || assignmentsQuery.isLoading ? (
             <TrainersSkeleton />
           ) : trainersQuery.isError ? (
@@ -550,6 +618,13 @@ export function TrainersView({ role }: { role: AppRole }) {
                 Add trainer profiles before assigning members.
               </p>
             </div>
+          ) : filteredTrainers.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center">
+              <p className="font-medium">No matching trainers</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Adjust the search text, status, or specialty filter.
+              </p>
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -563,7 +638,7 @@ export function TrainersView({ role }: { role: AppRole }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {trainers.map((trainer) => {
+                {filteredTrainers.map((trainer) => {
                   const trainerAssignments =
                     assignmentsByTrainer.get(trainer.id) ?? [];
                   const assignedNames = trainerAssignments

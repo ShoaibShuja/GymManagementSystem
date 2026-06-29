@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 6: Basic attendance MVP.
+Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 
 ## Completed Setup
 
@@ -55,6 +55,13 @@ Phase 6: Basic attendance MVP.
 - Admins can delete attendance records after confirmation; staff can record and view attendance.
 - Duplicate check-ins are blocked if the same member was checked in within the last 10 minutes.
 - Inactive and expired members show a friendly warning before check-in, but staff/admin can still decide to record the visit.
+- Main Dashboard now shows live overview cards for active members, inactive members, expired members, pending payments this month, collected payments this month, expiring memberships, and today's attendance.
+- Dashboard expiry alerts now highlight members whose membership ends within a configurable number of days. The default alert window is 7 days.
+- Dashboard uses simple cards, focused lists, skeleton loading states, error states, and empty states without complex charts.
+- Member filters are complete for name/phone search, member status, membership plan, payment state, and selected payment month.
+- Trainer filters are complete for name/phone search, trainer status, and specialty.
+- Attendance history filters are complete for member search and date filtering.
+- Membership plan search is now active instead of a placeholder.
 
 ## Installed Packages
 
@@ -106,15 +113,12 @@ Phase 6: Basic attendance MVP.
 
 ## Next Step
 
-Connect dashboard metric cards to live data and add member search/filter controls where placeholders remain.
+Build the admin user management page so gym owners can manage staff profiles and roles from the app.
 
 ## Known Limitations
 
 - Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
-- Dashboard metric cards are placeholders and do not query live records yet.
-- Dashboard metric cards are still placeholders.
 - A user must have a matching `profiles` row before they can access the dashboard.
-- Member search and plan search inputs are placeholders; real filtering is a future step.
 - Advanced trainer scheduling, booking, and calendar sync were intentionally not added.
 - Online payment gateways, invoices, and complex financial reports were intentionally not added.
 - Advanced scheduling, calendar integration, biometric devices, and hardware check-in integrations were intentionally not added.

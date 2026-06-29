@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import { Check, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -274,6 +275,8 @@ export function AttendanceView({ role }: { role: AppRole }) {
     null,
   );
   const [logToDelete, setLogToDelete] = useState<AttendanceLog | null>(null);
+  const [historySearch, setHistorySearch] = useState("");
+  const [historyDate, setHistoryDate] = useState("");
 
   const form = useForm<AttendanceCheckInValues>({
     resolver: zodResolver(attendanceCheckInSchema),
@@ -311,6 +314,22 @@ export function AttendanceView({ role }: { role: AppRole }) {
       )
       .slice(0, 8);
   }, [membersQuery.data, search]);
+
+  const filteredRecentLogs = useMemo(() => {
+    const normalizedSearch = historySearch.trim().toLowerCase();
+    const selectedDate = historyDate ? parseISO(historyDate) : null;
+
+    return (recentLogsQuery.data ?? []).filter((log) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        (log.members?.name ?? "").toLowerCase().includes(normalizedSearch) ||
+        (log.members?.phone ?? "").toLowerCase().includes(normalizedSearch);
+      const matchesDate =
+        !selectedDate || isSameDay(parseISO(log.check_in_time), selectedDate);
+
+      return matchesSearch && matchesDate;
+    });
+  }, [historyDate, historySearch, recentLogsQuery.data]);
 
   const invalidateAttendance = async () => {
     await Promise.all([
@@ -506,8 +525,34 @@ export function AttendanceView({ role }: { role: AppRole }) {
         <CardHeader>
           <CardTitle>Recent attendance history</CardTitle>
           <CardDescription>Latest gym visit records.</CardDescription>
+          <CardAction>
+            <Input
+              className="w-64"
+              placeholder="Search member"
+              value={historySearch}
+              onChange={(event) => setHistorySearch(event.currentTarget.value)}
+            />
+          </CardAction>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="grid gap-2 sm:grid-cols-[220px_auto]">
+            <Input
+              aria-label="Attendance history date"
+              type="date"
+              value={historyDate}
+              onChange={(event) => setHistoryDate(event.currentTarget.value)}
+            />
+            {historyDate && (
+              <Button
+                className="justify-self-start"
+                variant="outline"
+                onClick={() => setHistoryDate("")}
+              >
+                Clear date
+              </Button>
+            )}
+          </div>
+
           {recentLogsQuery.isLoading ? (
             <TableSkeleton />
           ) : recentLogsQuery.isError ? (
@@ -516,9 +561,9 @@ export function AttendanceView({ role }: { role: AppRole }) {
             </div>
           ) : (
             <AttendanceTable
-              logs={recentLogsQuery.data ?? []}
-              emptyTitle="No attendance history"
-              emptyDescription="Check-ins will appear here after they are recorded."
+              logs={filteredRecentLogs}
+              emptyTitle="No matching attendance records"
+              emptyDescription="Adjust the member search or date filter."
               isAdmin={isAdmin}
               isDeleting={deleteMutation.isPending}
               showDate
