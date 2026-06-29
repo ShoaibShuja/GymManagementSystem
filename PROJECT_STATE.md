@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 3: Membership plans and member management MVP.
+Phase 4: Trainer management and trainer assignments MVP.
 
 ## Completed Setup
 
@@ -33,6 +33,11 @@ Phase 3: Membership plans and member management MVP.
 - React Hook Form and Zod validation added for membership plan and member forms.
 - Member form calculates the membership end date from the selected plan duration and membership start date.
 - TanStack Query is used for plans and members data fetching, loading skeletons, error states, and mutation invalidation.
+- Trainer Management page now lists trainers, creates trainers, edits trainers, and deactivates trainers instead of hard deleting them.
+- Trainer form uses React Hook Form and Zod validation for name, phone, specialty, status, and notes.
+- Trainer-to-member assignment feature is complete using the `trainer_member_assignments` table.
+- Admins can assign one trainer to multiple active members and remove assignments.
+- Staff users can view trainers and assigned members without seeing admin-only actions.
 
 ## Installed Packages
 
@@ -84,13 +89,14 @@ Phase 3: Membership plans and member management MVP.
 
 ## Next Step
 
-Build trainer management and trainer assignment workflows, then connect member search and filters to real table controls.
+Build payment tracking MVP with monthly paid/unpaid records, manual mark-as-paid, and payment history.
 
 ## Known Limitations
 
 - Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
 - Dashboard metric cards are placeholders and do not query live records yet.
-- Dashboard metric cards, trainers, payments, and attendance pages are still placeholders.
+- Dashboard metric cards, payments, and attendance pages are still placeholders.
 - A user must have a matching `profiles` row before they can access the dashboard.
 - Member search and plan search inputs are placeholders; real filtering is a future step.
 - Payment logic was intentionally not added in this step.
+- Advanced trainer scheduling, booking, and calendar sync were intentionally not added.

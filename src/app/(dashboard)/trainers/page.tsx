@@ -1,17 +1,12 @@
-import { Dumbbell } from "lucide-react";
-
-import { SectionPlaceholder } from "@/components/layout/section-placeholder";
+import { TrainersView } from "@/features/trainers/trainers-view";
+import { getCurrentProfile } from "@/lib/auth/server";
 
 export const metadata = {
   title: "Trainers",
 };
 
-export default function TrainersPage() {
-  return (
-    <SectionPlaceholder
-      title="Trainers"
-      description="Manage trainer profiles and member assignments in the next phase."
-      icon={Dumbbell}
-    />
-  );
+export default async function TrainersPage() {
+  const profile = await getCurrentProfile();
+
+  return <TrainersView role={profile?.role ?? "staff"} />;
 }

@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-Membership Plans and Members now have real tables and forms. Trainers, payments, and attendance are still placeholders and will be added in the next phases.
+Membership Plans, Members, and Trainers now have real tables and forms. Payments and attendance are still placeholders and will be added in the next phases.
 
 ## Basic Project Organization
 
@@ -116,6 +116,43 @@ When an admin clicks Delete, the app asks for confirmation before permanently re
 - Inactive means the member is not currently using the gym but is kept in the records.
 - Expired means the member's membership period has ended or needs renewal.
 
+## Trainers
+
+The Trainers page stores trainer profiles and shows which members are assigned to each trainer.
+
+To add a trainer:
+
+1. Open Trainers from the dashboard menu.
+2. Click Add trainer.
+3. Enter the trainer name.
+4. Add phone, specialty, and notes if needed.
+5. Choose Active or Inactive.
+6. Click Save trainer.
+
+Admins can edit trainers later. Admins can also deactivate a trainer instead of deleting the trainer record. This keeps old records safer.
+
+Staff users can view trainers and assigned members, but they cannot add, edit, deactivate, assign, or remove trainer assignments.
+
+## Trainer Assignments
+
+Trainer assignments connect trainers to members. One trainer can be assigned to many members.
+
+To assign a trainer to a member:
+
+1. Open Trainers from the dashboard menu.
+2. Find the trainer.
+3. Click Assignments.
+4. Select an active member from the list.
+5. Click Assign.
+
+To remove a trainer assignment:
+
+1. Open the trainer's Assignments window.
+2. Find the assigned member.
+3. Click Remove.
+
+Removing an assignment only removes the trainer-member connection. It does not delete the trainer or the member.
+
 ## Payments
 
 Payments are tracked manually. The system records whether a member paid for a month, the amount, the payment date, and notes.
@@ -124,4 +161,4 @@ The app does not process online payments, charge cards, or connect to a payment 
 
 ## Current Next Step
 
-The next step is to build trainer management and trainer assignment, then turn the member search box into a real search and filter tool.
+The next step is to build payment tracking with monthly paid/unpaid records and manual mark-as-paid.
