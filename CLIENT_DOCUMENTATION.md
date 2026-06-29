@@ -300,7 +300,57 @@ Supabase or Vercel environment variable issues:
 - Make sure the same values are set in Vercel project settings for production.
 - Redeploy the app after changing Vercel environment variables.
 
-## 13. Developer Handover
+## 13. Hosting and Deployment Guide
+
+The app is hosted using two main services:
+
+- Vercel hosts the website. It runs the app and gives the gym a web address.
+- Supabase stores the data. It handles login accounts, member records, plans, trainers, payments, attendance, and database security.
+
+What Vercel does:
+
+- Shows the app in the browser.
+- Runs the production build.
+- Stores production environment variables for the website.
+- Redeploys the app when the developer publishes a new version.
+
+What Supabase does:
+
+- Stores the database.
+- Stores login users.
+- Protects records with database security rules.
+- Provides the keys that let the app connect to the correct database.
+
+What the client should not touch without a developer:
+
+- Vercel environment variables.
+- Supabase service role key.
+- Supabase database policies.
+- Supabase SQL migrations.
+- Production database tables.
+- Source code files.
+
+Safe client tasks after launch:
+
+- Log in and use the app.
+- Add and update real plans.
+- Add and update members.
+- Add and update trainers.
+- Record payments.
+- Record attendance.
+- Ask the developer or administrator to create new login accounts.
+
+Before launch, the developer should:
+
+- Apply the database schema in Supabase.
+- Keep RLS security enabled.
+- Configure Supabase Auth redirect URLs.
+- Create the first Admin user.
+- Add production environment variables in Vercel.
+- Run lint, typecheck, and production build.
+- Test login, dashboard, members, payments, attendance, admin access, staff restrictions, and mobile layout.
+
+## 14. Developer Handover
 
 Tech stack:
 
