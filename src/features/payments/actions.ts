@@ -1,13 +1,12 @@
 "use server";
 
 import { format } from "date-fns";
-import { z } from "zod";
-
 import {
   canUseOperationsProfile,
   getCurrentProfile,
   isAdminProfile,
 } from "@/lib/auth/server";
+import { getActionErrorMessage, getDatabaseErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   markPaidSchema,
@@ -24,14 +23,6 @@ type ActionResult = {
 function emptyToNull(value: string | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
-}
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof z.ZodError) {
-    return error.issues.map((issue) => issue.message).join(" ");
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong.";
 }
 
 async function requirePaymentWriteAction() {
@@ -85,7 +76,13 @@ export async function markPaymentPaidAction(
       .maybeSingle();
 
     if (existingError) {
-      return { ok: false, error: existingError.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          existingError,
+          "The payment status could not be checked. Refresh the page and try again.",
+        ),
+      };
     }
 
     if (existingPayment) {
@@ -102,7 +99,7 @@ export async function markPaymentPaidAction(
         .eq("id", existingPayment.id);
 
       if (error) {
-        return { ok: false, error: error.message };
+        return { ok: false, error: getDatabaseErrorMessage(error) };
       }
 
       const memberError = await activateMemberAfterAdminPayment(
@@ -110,7 +107,13 @@ export async function markPaymentPaidAction(
       );
 
       if (memberError) {
-        return { ok: false, error: memberError.message };
+        return {
+          ok: false,
+          error: getDatabaseErrorMessage(
+            memberError,
+            "Payment was saved, but the member status could not be updated.",
+          ),
+        };
       }
 
       return { ok: true };
@@ -128,18 +131,24 @@ export async function markPaymentPaidAction(
     });
 
     if (error) {
-      return { ok: false, error: error.message };
+      return { ok: false, error: getDatabaseErrorMessage(error) };
     }
 
     const memberError = await activateMemberAfterAdminPayment(parsed.member_id);
 
     if (memberError) {
-      return { ok: false, error: memberError.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          memberError,
+          "Payment was saved, but the member status could not be updated.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -158,12 +167,18 @@ export async function updatePaymentNotesAction(
       .eq("id", paymentId);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The payment note could not be saved. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -180,11 +195,17 @@ export async function deletePaymentAction(
       .eq("id", paymentId);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The payment could not be removed. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }

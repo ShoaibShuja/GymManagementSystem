@@ -1,12 +1,15 @@
 import { z } from "zod";
 
+import {
+  moneySchema,
+  positiveIntegerSchema,
+  requiredText,
+} from "@/lib/validation";
+
 export const planFormSchema = z.object({
-  name: z.string().trim().min(2, "Plan name is required."),
-  duration_months: z
-    .number()
-    .int("Duration must be a whole number.")
-    .min(1, "Duration must be at least 1 month."),
-  price: z.number().min(0, "Price cannot be negative."),
+  name: requiredText("Plan name"),
+  duration_months: positiveIntegerSchema("Duration"),
+  price: moneySchema("Price"),
   is_active: z.boolean(),
 });
 

@@ -54,6 +54,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { AttendanceLog } from "@/features/attendance/schema";
 import type { AppRole } from "@/lib/auth/roles";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 import {
   createMemberAction,
@@ -118,7 +119,12 @@ async function fetchMembers() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load members. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as MemberWithPlan[];
@@ -133,7 +139,12 @@ async function fetchActivePlans() {
     .order("duration_months", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load membership plans. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as MemberPlanSummary[];
@@ -147,7 +158,12 @@ async function fetchMemberMonthPayments(paymentMonth: string) {
     .eq("payment_month", paymentMonth);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load payment filters. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as MemberMonthPayment[];
@@ -179,7 +195,12 @@ async function fetchMemberAttendance(memberId: string) {
     .limit(20);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load attendance history. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as AttendanceLog[];
@@ -633,12 +654,11 @@ export function MembersView({ role }: { role: AppRole }) {
             <MembersSkeleton />
           ) : membersQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load members. {membersQuery.error.message}
+              {getQueryErrorMessage(membersQuery.error)}
             </div>
           ) : memberPaymentsQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load payment filters.{" "}
-              {memberPaymentsQuery.error.message}
+              {getQueryErrorMessage(memberPaymentsQuery.error)}
             </div>
           ) : members.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
@@ -730,7 +750,7 @@ export function MembersView({ role }: { role: AppRole }) {
 
       {plansQuery.isError && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          Could not load active plans. {plansQuery.error.message}
+          {getQueryErrorMessage(plansQuery.error)}
         </div>
       )}
 
@@ -805,8 +825,7 @@ export function MembersView({ role }: { role: AppRole }) {
             <MembersSkeleton />
           ) : memberAttendanceQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load attendance history.{" "}
-              {memberAttendanceQuery.error.message}
+              {getQueryErrorMessage(memberAttendanceQuery.error)}
             </div>
           ) : (memberAttendanceQuery.data ?? []).length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">

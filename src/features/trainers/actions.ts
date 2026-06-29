@@ -1,6 +1,7 @@
 "use server";
 
 import { getCurrentProfile, isAdminProfile } from "@/lib/auth/server";
+import { getActionErrorMessage, getDatabaseErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   assignmentFormSchema,
@@ -17,10 +18,6 @@ type ActionResult = {
 function emptyToNull(value: string | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
-}
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Something went wrong.";
 }
 
 async function requireAdminAction() {
@@ -55,12 +52,12 @@ export async function createTrainerAction(
       .insert(toTrainerPayload(values));
 
     if (error) {
-      return { ok: false, error: error.message };
+      return { ok: false, error: getDatabaseErrorMessage(error) };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -78,12 +75,12 @@ export async function updateTrainerAction(
       .eq("id", id);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return { ok: false, error: getDatabaseErrorMessage(error) };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -100,12 +97,18 @@ export async function deactivateTrainerAction(
       .eq("id", id);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The trainer could not be deactivated. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -124,12 +127,18 @@ export async function assignMemberToTrainerAction(
     });
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The member could not be assigned. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -146,11 +155,17 @@ export async function removeTrainerAssignmentAction(
       .eq("id", assignmentId);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The assignment could not be removed. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }

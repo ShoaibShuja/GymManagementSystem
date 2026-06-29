@@ -1,19 +1,27 @@
 import { z } from "zod";
 
+import {
+  databaseIdSchema,
+  optionalPhoneSchema,
+  optionalText,
+  requiredText,
+} from "@/lib/validation";
 import type { MemberStatus, TrainerStatus } from "@/types/database";
 
 export const trainerStatuses = ["active", "inactive"] as const;
 
 export const trainerFormSchema = z.object({
-  name: z.string().trim().min(2, "Trainer name is required."),
-  phone: z.string().trim().optional(),
-  specialty: z.string().trim().optional(),
-  status: z.enum(trainerStatuses),
-  notes: z.string().trim().optional(),
+  name: requiredText("Trainer name"),
+  phone: optionalPhoneSchema,
+  specialty: optionalText(80),
+  status: z.enum(trainerStatuses, {
+    error: "Select a valid trainer status.",
+  }),
+  notes: optionalText(),
 });
 
 export const assignmentFormSchema = z.object({
-  member_id: z.string().uuid("Select a member."),
+  member_id: databaseIdSchema("Select a member."),
 });
 
 export type TrainerFormValues = z.infer<typeof trainerFormSchema>;

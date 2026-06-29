@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/table";
 import { createClient } from "@/lib/supabase/browser";
 import type { AppRole } from "@/lib/auth/roles";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import {
   createPlanAction,
   deactivatePlanAction,
@@ -78,7 +79,12 @@ async function fetchPlans() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load membership plans. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as MembershipPlan[];
@@ -155,7 +161,11 @@ function PlanForm({
                     name={field.name}
                     ref={field.ref}
                     onChange={(event) =>
-                      field.onChange(event.currentTarget.valueAsNumber)
+                      field.onChange(
+                        event.currentTarget.value === ""
+                          ? undefined
+                          : event.currentTarget.valueAsNumber,
+                      )
                     }
                   />
                 </FormControl>
@@ -179,7 +189,11 @@ function PlanForm({
                     name={field.name}
                     ref={field.ref}
                     onChange={(event) =>
-                      field.onChange(event.currentTarget.valueAsNumber)
+                      field.onChange(
+                        event.currentTarget.value === ""
+                          ? undefined
+                          : event.currentTarget.valueAsNumber,
+                      )
                     }
                   />
                 </FormControl>
@@ -295,7 +309,7 @@ export function PlansView({ role }: { role: AppRole }) {
             <PlansSkeleton />
           ) : plansQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load plans. {plansQuery.error.message}
+              {getQueryErrorMessage(plansQuery.error)}
             </div>
           ) : plans.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">

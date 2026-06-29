@@ -310,6 +310,28 @@ The app does not create login accounts or send invitations. New login accounts s
 
 The Settings page is admin-only. It gives admins a simple place to open user role management and review the access rules used by the app.
 
+## Troubleshooting
+
+If something does not work, try these steps first:
+
+1. Refresh the page.
+2. Check that the internet connection is working.
+3. Sign out and sign in again.
+4. Confirm the user has the correct role.
+5. Ask the administrator to check that the user has a matching profile.
+
+Common messages:
+
+- "The email or password is not correct" means the login details do not match a Supabase Auth account.
+- "This account does not have an app profile yet" means the login exists, but the app profile row is missing.
+- "You do not have permission" means the user role is not allowed to do that action.
+- "A record with these details already exists" means the same plan, payment, or assignment may already be saved.
+- "Refresh the page and try again" usually means the app could not confirm the latest database state.
+
+For form errors, check the highlighted field. Phone numbers, dates, prices, statuses, and roles must be entered in the expected format before saving.
+
+If the problem continues, the administrator should check Supabase project settings, environment variables, and the database migrations.
+
 ## Current Next Step
 
 The next step is to prepare deployment documentation and Supabase setup steps for production use.

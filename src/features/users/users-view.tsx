@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 import { updateProfileRoleAction } from "@/features/users/actions";
 import type {
@@ -53,7 +54,12 @@ async function fetchProfiles() {
     .order("full_name", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load users. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as UserProfileRow[];
@@ -125,7 +131,7 @@ export function UsersView({ currentProfileId }: { currentProfileId: string }) {
             <UsersSkeleton />
           ) : profilesQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load users. {profilesQuery.error.message}
+              {getQueryErrorMessage(profilesQuery.error)}
             </div>
           ) : profiles.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
