@@ -1,17 +1,12 @@
-import { UsersRound } from "lucide-react";
-
-import { SectionPlaceholder } from "@/components/layout/section-placeholder";
+import { MembersView } from "@/features/members/members-view";
+import { getCurrentProfile } from "@/lib/auth/server";
 
 export const metadata = {
   title: "Members",
 };
 
-export default function MembersPage() {
-  return (
-    <SectionPlaceholder
-      title="Members"
-      description="Add, edit, search, and manage gym members in the next phase."
-      icon={UsersRound}
-    />
-  );
+export default async function MembersPage() {
+  const profile = await getCurrentProfile();
+
+  return <MembersView role={profile?.role ?? "staff"} />;
 }
