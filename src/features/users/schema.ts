@@ -3,7 +3,9 @@ import { z } from "zod";
 import { APP_ROLES, type AppRole } from "@/lib/auth/roles";
 
 export const updateProfileRoleSchema = z.object({
-  role: z.enum(APP_ROLES),
+  role: z.enum(APP_ROLES, {
+    error: "Select a valid role.",
+  }),
 });
 
 export type UpdateProfileRoleValues = z.infer<typeof updateProfileRoleSchema>;

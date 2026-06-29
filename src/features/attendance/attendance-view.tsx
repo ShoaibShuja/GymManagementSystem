@@ -56,6 +56,7 @@ import {
   type AttendanceMember,
 } from "@/features/attendance/schema";
 import type { AppRole } from "@/lib/auth/roles";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 
 const attendanceMembersQueryKey = ["attendance-members"] as const;
@@ -88,7 +89,12 @@ async function fetchMembers() {
     .order("name", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load members. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as AttendanceMember[];
@@ -121,7 +127,12 @@ async function fetchTodayLogs() {
     .order("check_in_time", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load today's attendance. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as AttendanceLog[];
@@ -152,7 +163,12 @@ async function fetchRecentLogs() {
     .limit(50);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load attendance history. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as AttendanceLog[];
@@ -395,7 +411,7 @@ export function AttendanceView({ role }: { role: AppRole }) {
               <TableSkeleton rows={3} />
             ) : membersQuery.isError ? (
               <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                Could not load members. {membersQuery.error.message}
+                {getQueryErrorMessage(membersQuery.error)}
               </div>
             ) : filteredMembers.length === 0 ? (
               <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
@@ -504,8 +520,7 @@ export function AttendanceView({ role }: { role: AppRole }) {
             <TableSkeleton />
           ) : todayLogsQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load today&apos;s attendance.{" "}
-              {todayLogsQuery.error.message}
+              {getQueryErrorMessage(todayLogsQuery.error)}
             </div>
           ) : (
             <AttendanceTable
@@ -557,7 +572,7 @@ export function AttendanceView({ role }: { role: AppRole }) {
             <TableSkeleton />
           ) : recentLogsQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load attendance history. {recentLogsQuery.error.message}
+              {getQueryErrorMessage(recentLogsQuery.error)}
             </div>
           ) : (
             <AttendanceTable

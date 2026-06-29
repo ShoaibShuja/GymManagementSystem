@@ -1,26 +1,44 @@
 import { addMonths, format, parseISO, subDays } from "date-fns";
 import { z } from "zod";
 
+import {
+  dateStringSchema,
+  optionalText,
+  phoneSchema,
+  requiredText,
+} from "@/lib/validation";
 import type { MemberStatus } from "@/types/database";
 
 export const memberStatuses = ["active", "inactive", "expired"] as const;
 
-export const memberFormSchema = z.object({
-  name: z.string().trim().min(2, "Member name is required."),
-  phone: z.string().trim().min(3, "Phone number is required."),
-  email: z
-    .string()
-    .trim()
-    .email("Enter a valid email address.")
-    .optional()
-    .or(z.literal("")),
-  address: z.string().trim().optional(),
-  status: z.enum(memberStatuses),
-  membership_plan_id: z.string().uuid("Select a membership plan."),
-  membership_start_date: z.string().min(1, "Start date is required."),
-  membership_end_date: z.string().min(1, "End date is required."),
-  notes: z.string().trim().optional(),
-});
+export const memberFormSchema = z
+  .object({
+    name: requiredText("Member name"),
+    phone: phoneSchema,
+    email: z
+      .string()
+      .trim()
+      .email("Enter a valid email address.")
+      .optional()
+      .or(z.literal("")),
+    address: optionalText(200),
+    status: z.enum(memberStatuses, {
+      error: "Select a valid member status.",
+    }),
+    membership_plan_id: z.string().uuid("Select a membership plan."),
+    membership_start_date: dateStringSchema("Start date"),
+    membership_end_date: dateStringSchema("End date"),
+    notes: optionalText(),
+  })
+  .refine(
+    (values) =>
+      parseISO(values.membership_end_date) >=
+      parseISO(values.membership_start_date),
+    {
+      message: "End date cannot be before the start date.",
+      path: ["membership_end_date"],
+    },
+  );
 
 export type MemberFormValues = z.infer<typeof memberFormSchema>;
 

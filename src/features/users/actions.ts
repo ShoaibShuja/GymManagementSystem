@@ -1,8 +1,7 @@
 "use server";
 
-import { z } from "zod";
-
 import { getCurrentProfile, isAdminProfile } from "@/lib/auth/server";
+import { getActionErrorMessage, getDatabaseErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   updateProfileRoleSchema,
@@ -13,14 +12,6 @@ type ActionResult = {
   ok: boolean;
   error?: string;
 };
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof z.ZodError) {
-    return error.issues.map((issue) => issue.message).join(" ");
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong.";
-}
 
 async function requireAdminAction() {
   const profile = await getCurrentProfile();
@@ -54,11 +45,17 @@ export async function updateProfileRoleAction(
       .eq("id", profileId);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The user role could not be updated. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }

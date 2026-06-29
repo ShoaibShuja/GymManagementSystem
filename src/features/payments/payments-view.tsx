@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import type { AppRole } from "@/lib/auth/roles";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 import {
   deletePaymentAction,
@@ -130,7 +131,12 @@ async function fetchMembers() {
     .order("name", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load payment members. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as PaymentMember[];
@@ -147,7 +153,12 @@ async function fetchMonthPayments(paymentMonth: string) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load monthly payments. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as MonthPayment[];
@@ -183,7 +194,12 @@ async function fetchPaymentHistory() {
     .limit(50);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load payment history. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as PaymentHistoryRow[];
@@ -485,7 +501,7 @@ export function PaymentsView({ role }: { role: AppRole }) {
             <TableSkeleton />
           ) : overviewError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load payment overview. {overviewError.message}
+              {getQueryErrorMessage(overviewError)}
             </div>
           ) : filteredRows.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
@@ -569,7 +585,7 @@ export function PaymentsView({ role }: { role: AppRole }) {
             <TableSkeleton rows={4} />
           ) : historyQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load payment history. {historyQuery.error.message}
+              {getQueryErrorMessage(historyQuery.error)}
             </div>
           ) : historyRows.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">

@@ -1,12 +1,11 @@
 import { z } from "zod";
 
+import { databaseIdSchema, optionalText } from "@/lib/validation";
 import type { MemberStatus } from "@/types/database";
 
-const databaseIdSchema = z.string().trim().min(1, "Required.");
-
 export const attendanceCheckInSchema = z.object({
-  member_id: databaseIdSchema,
-  notes: z.string().trim().optional(),
+  member_id: databaseIdSchema("Select a member."),
+  notes: optionalText(),
 });
 
 export type AttendanceCheckInValues = z.infer<typeof attendanceCheckInSchema>;

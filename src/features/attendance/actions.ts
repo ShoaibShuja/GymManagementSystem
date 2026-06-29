@@ -1,13 +1,13 @@
 "use server";
 
 import { subMinutes } from "date-fns";
-import { z } from "zod";
 
 import {
   canUseOperationsProfile,
   getCurrentProfile,
   isAdminProfile,
 } from "@/lib/auth/server";
+import { getActionErrorMessage, getDatabaseErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   attendanceCheckInSchema,
@@ -22,14 +22,6 @@ type ActionResult = {
 function emptyToNull(value: string | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
-}
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof z.ZodError) {
-    return error.issues.map((issue) => issue.message).join(" ");
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong.";
 }
 
 async function requireAttendanceWriteAction() {
@@ -67,7 +59,13 @@ export async function checkInMemberAction(
       .maybeSingle();
 
     if (recentError) {
-      return { ok: false, error: recentError.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          recentError,
+          "Could not check recent attendance. Refresh the page and try again.",
+        ),
+      };
     }
 
     if (recentLog) {
@@ -84,12 +82,18 @@ export async function checkInMemberAction(
     });
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The check-in could not be saved. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -106,11 +110,17 @@ export async function deleteAttendanceLogAction(
       .eq("id", id);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The attendance record could not be deleted. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }

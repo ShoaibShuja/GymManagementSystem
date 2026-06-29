@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 import type { MemberStatus, PaymentStatus } from "@/types/database";
 
@@ -106,15 +107,30 @@ async function fetchDashboardData(paymentMonth: string) {
   ]);
 
   if (membersResult.error) {
-    throw new Error(membersResult.error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        membersResult.error,
+        "Could not load member totals. Refresh the page and try again.",
+      ),
+    );
   }
 
   if (paymentsResult.error) {
-    throw new Error(paymentsResult.error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        paymentsResult.error,
+        "Could not load payment totals. Refresh the page and try again.",
+      ),
+    );
   }
 
   if (attendanceResult.error) {
-    throw new Error(attendanceResult.error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        attendanceResult.error,
+        "Could not load attendance totals. Refresh the page and try again.",
+      ),
+    );
   }
 
   return {
@@ -277,7 +293,7 @@ export function DashboardView() {
         <MetricSkeleton />
       ) : dashboardQuery.isError ? (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          Could not load dashboard overview. {dashboardQuery.error.message}
+          {getQueryErrorMessage(dashboardQuery.error)}
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

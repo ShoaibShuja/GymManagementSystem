@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import type { AppRole } from "@/lib/auth/roles";
+import { getDatabaseErrorMessage, getQueryErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/browser";
 import {
   assignMemberToTrainerAction,
@@ -92,7 +93,12 @@ async function fetchTrainers() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load trainers. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as Trainer[];
@@ -119,7 +125,12 @@ async function fetchTrainerAssignments() {
     .order("assigned_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load trainer assignments. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as unknown as TrainerAssignment[];
@@ -134,7 +145,12 @@ async function fetchAssignableMembers() {
     .order("name", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      getDatabaseErrorMessage(
+        error,
+        "Could not load assignable members. Refresh the page and try again.",
+      ),
+    );
   }
 
   return (data ?? []) as AssignmentMember[];
@@ -605,11 +621,11 @@ export function TrainersView({ role }: { role: AppRole }) {
             <TrainersSkeleton />
           ) : trainersQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load trainers. {trainersQuery.error.message}
+              {getQueryErrorMessage(trainersQuery.error)}
             </div>
           ) : assignmentsQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-              Could not load assignments. {assignmentsQuery.error.message}
+              {getQueryErrorMessage(assignmentsQuery.error)}
             </div>
           ) : trainers.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
@@ -710,8 +726,7 @@ export function TrainersView({ role }: { role: AppRole }) {
 
       {membersQuery.isError && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          Could not load active members for assignments.{" "}
-          {membersQuery.error.message}
+          {getQueryErrorMessage(membersQuery.error)}
         </div>
       )}
 

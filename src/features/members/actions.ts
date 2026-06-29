@@ -1,6 +1,7 @@
 "use server";
 
 import { getCurrentProfile, isAdminProfile } from "@/lib/auth/server";
+import { getActionErrorMessage, getDatabaseErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   memberFormSchema,
@@ -34,10 +35,6 @@ function toMemberPayload(values: MemberFormValues) {
   };
 }
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Something went wrong.";
-}
-
 async function requireMemberWriteAction() {
   const profile = await getCurrentProfile();
 
@@ -66,12 +63,12 @@ export async function createMemberAction(
       .insert(toMemberPayload(values));
 
     if (error) {
-      return { ok: false, error: error.message };
+      return { ok: false, error: getDatabaseErrorMessage(error) };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -89,12 +86,12 @@ export async function updateMemberAction(
       .eq("id", id);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return { ok: false, error: getDatabaseErrorMessage(error) };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
 
@@ -106,11 +103,17 @@ export async function deleteMemberAction(id: string): Promise<ActionResult> {
     const { error } = await supabase.from("members").delete().eq("id", id);
 
     if (error) {
-      return { ok: false, error: error.message };
+      return {
+        ok: false,
+        error: getDatabaseErrorMessage(
+          error,
+          "The member could not be deleted. Refresh the page and try again.",
+        ),
+      };
     }
 
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: getErrorMessage(error) };
+    return { ok: false, error: getActionErrorMessage(error) };
   }
 }
