@@ -247,7 +247,7 @@ function AttendanceTable({
             </TableCell>
             {isAdmin && (
               <TableCell>
-                <div className="flex justify-end">
+                <div className="flex min-w-24 justify-end">
                   <Button
                     disabled={isDeleting}
                     size="sm"

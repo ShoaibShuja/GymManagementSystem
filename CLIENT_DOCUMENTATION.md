@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-The Dashboard, Membership Plans, Members, Trainers, Payments, Attendance, and Users pages now have real tables, forms, totals, alerts, search/filter controls, and role-based access.
+The Dashboard, Membership Plans, Members, Trainers, Payments, Attendance, Settings, and Users pages now have real tables, forms, totals, alerts, search/filter controls, role-based access, and a polished responsive interface.
 
 ## Basic Project Organization
 
@@ -115,6 +115,22 @@ The dashboard has links for:
 - Settings and Users for admins only
 
 On desktop, the navigation is shown in the sidebar. On mobile, it opens from the menu button at the top.
+
+## User Interface Guide
+
+The app is designed to be simple for a small gym team.
+
+- Use the sidebar on desktop to move between pages.
+- Use the menu button on mobile to open the same navigation.
+- Main actions, such as Add member or Mark paid, appear near the top of the relevant page or inside the table row they affect.
+- Search boxes and filters sit above the related table.
+- Status badges show important states such as Active, Inactive, Expired, Paid, and Unpaid.
+- Destructive actions such as Delete, Remove, or Deactivate use stronger styling and ask for confirmation where needed.
+- Empty screens explain what to do next instead of showing a blank page.
+- Loading skeletons show that the app is fetching data.
+- Success and error messages appear as small notifications after actions.
+
+On smaller screens, tables can scroll sideways. Forms and dialogs stay within the screen so staff can complete work from a phone.
 
 ## Dashboard Overview
 
@@ -289,6 +305,10 @@ The Users page is admin-only.
 It lists existing app profiles and lets an admin change a profile role between Admin and Staff. The current admin cannot remove their own admin role from this page, which helps prevent accidental lockout.
 
 The app does not create login accounts or send invitations. New login accounts should still be created in Supabase Auth, then the matching profile can be managed in the app.
+
+## Settings
+
+The Settings page is admin-only. It gives admins a simple place to open user role management and review the access rules used by the app.
 
 ## Current Next Step
 
