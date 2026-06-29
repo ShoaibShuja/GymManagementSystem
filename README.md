@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gym Management System
+
+A production-ready Gym Management System MIS for a small gym. The foundation is configured with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Supabase, TanStack Query, React Hook Form, Zod, date-fns, and Vercel-friendly defaults.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Copy environment variables:
+
+```bash
+copy .env.example .env.local
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` starts the local dev server.
+- `npm run lint` runs ESLint.
+- `npm run typecheck` runs TypeScript checks.
+- `npm run build` creates a production build.
+- `npm run format:check` checks Prettier formatting.
+- `npm run format` formats files.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app` contains App Router routes and layouts.
+- `src/components` contains shared React components.
+- `src/components/ui` contains shadcn/ui components.
+- `src/features` is reserved for feature modules.
+- `src/lib` contains shared utilities and Supabase clients.
+- `src/hooks` is reserved for shared React hooks.
+- `src/schemas` is reserved for Zod schemas.
+- `src/types` contains shared TypeScript types.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-## Deploy on Vercel
+Do not commit real `.env.local` values.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Current Status
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project foundation is complete. Feature pages, database schema, Supabase Auth, and RLS policies come next.
