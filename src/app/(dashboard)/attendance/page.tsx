@@ -1,17 +1,12 @@
-import { CalendarCheck } from "lucide-react";
-
-import { SectionPlaceholder } from "@/components/layout/section-placeholder";
+import { AttendanceView } from "@/features/attendance/attendance-view";
+import { getCurrentProfile } from "@/lib/auth/server";
 
 export const metadata = {
   title: "Attendance",
 };
 
-export default function AttendancePage() {
-  return (
-    <SectionPlaceholder
-      title="Attendance"
-      description="Record member check-ins and view visit history in the next phase."
-      icon={CalendarCheck}
-    />
-  );
+export default async function AttendancePage() {
+  const profile = await getCurrentProfile();
+
+  return <AttendanceView role={profile?.role ?? "staff"} />;
 }

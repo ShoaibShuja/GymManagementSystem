@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Edit, Plus, Trash2 } from "lucide-react";
+import { CalendarClock, Edit, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -52,6 +52,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import type { AttendanceLog } from "@/features/attendance/schema";
 import type { AppRole } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/browser";
 import {
@@ -70,6 +71,7 @@ import {
 
 const membersQueryKey = ["members"] as const;
 const activePlansQueryKey = ["membership-plans", "active"] as const;
+const memberAttendanceQueryKey = "member-attendance";
 
 async function ensureAction(result: { ok: boolean; error?: string }) {
   if (!result.ok) {
@@ -129,8 +131,44 @@ async function fetchActivePlans() {
   return (data ?? []) as MemberPlanSummary[];
 }
 
+async function fetchMemberAttendance(memberId: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("attendance_logs")
+    .select(
+      `
+        id,
+        member_id,
+        check_in_time,
+        recorded_by,
+        notes,
+        members (
+          name,
+          phone,
+          status
+        ),
+        profiles (
+          full_name
+        )
+      `,
+    )
+    .eq("member_id", memberId)
+    .order("check_in_time", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as unknown as AttendanceLog[];
+}
+
 function formatDate(value: string) {
   return format(parseISO(value), "MMM d, yyyy");
+}
+
+function formatDateTime(value: string) {
+  return format(parseISO(value), "MMM d, yyyy h:mm a");
 }
 
 function statusVariant(status: MemberWithPlan["status"]) {
@@ -378,6 +416,8 @@ export function MembersView({ role }: { role: AppRole }) {
   const [memberToDelete, setMemberToDelete] = useState<MemberWithPlan | null>(
     null,
   );
+  const [attendanceMember, setAttendanceMember] =
+    useState<MemberWithPlan | null>(null);
 
   const membersQuery = useQuery({
     queryKey: membersQueryKey,
@@ -386,6 +426,11 @@ export function MembersView({ role }: { role: AppRole }) {
   const plansQuery = useQuery({
     queryKey: activePlansQueryKey,
     queryFn: fetchActivePlans,
+  });
+  const memberAttendanceQuery = useQuery({
+    queryKey: [memberAttendanceQueryKey, attendanceMember?.id],
+    queryFn: () => fetchMemberAttendance(attendanceMember?.id ?? ""),
+    enabled: !!attendanceMember,
   });
 
   const saveMutation = useMutation({
@@ -504,6 +549,14 @@ export function MembersView({ role }: { role: AppRole }) {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => setAttendanceMember(member)}
+                        >
+                          <CalendarClock />
+                          Attendance
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => {
                             setEditingMember(member);
                             setOpen(true);
@@ -588,6 +641,62 @@ export function MembersView({ role }: { role: AppRole }) {
               {deleteMutation.isPending ? "Deleting..." : "Delete member"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!attendanceMember}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            setAttendanceMember(null);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Attendance history</DialogTitle>
+            <DialogDescription>
+              Recent check-ins for {attendanceMember?.name ?? "this member"}.
+            </DialogDescription>
+          </DialogHeader>
+          {memberAttendanceQuery.isLoading ? (
+            <MembersSkeleton />
+          ) : memberAttendanceQuery.isError ? (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              Could not load attendance history.{" "}
+              {memberAttendanceQuery.error.message}
+            </div>
+          ) : (memberAttendanceQuery.data ?? []).length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center">
+              <p className="font-medium">No attendance yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                This member has no recorded check-ins.
+              </p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Check-in time</TableHead>
+                  <TableHead>Recorded by</TableHead>
+                  <TableHead>Notes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(memberAttendanceQuery.data ?? []).map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell>{formatDateTime(log.check_in_time)}</TableCell>
+                    <TableCell>
+                      {log.profiles?.full_name ?? "Unknown user"}
+                    </TableCell>
+                    <TableCell className="max-w-64 whitespace-normal">
+                      {log.notes ?? "No notes"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 5: Manual payment tracking MVP.
+Phase 6: Basic attendance MVP.
 
 ## Completed Setup
 
@@ -48,6 +48,13 @@ Phase 5: Manual payment tracking MVP.
 - Payment filters added for month, paid/unpaid status, and member name or phone search.
 - Payment mark-as-paid validation now accepts existing Postgres UUID values used by the seed data and shows readable validation errors.
 - Marking a member as paid now also updates that member's status to active.
+- Basic Attendance page now supports member search, member selection, optional notes, and check-in recording.
+- Attendance check-ins create `attendance_logs` records with member, check-in time, notes, and recorded-by profile.
+- Today's attendance log and recent attendance history tables are live.
+- Member rows now include an Attendance action that shows recent check-ins for that member.
+- Admins can delete attendance records after confirmation; staff can record and view attendance.
+- Duplicate check-ins are blocked if the same member was checked in within the last 10 minutes.
+- Inactive and expired members show a friendly warning before check-in, but staff/admin can still decide to record the visit.
 
 ## Installed Packages
 
@@ -99,14 +106,15 @@ Phase 5: Manual payment tracking MVP.
 
 ## Next Step
 
-Build basic attendance check-in MVP and connect dashboard metric cards to live data.
+Connect dashboard metric cards to live data and add member search/filter controls where placeholders remain.
 
 ## Known Limitations
 
 - Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
 - Dashboard metric cards are placeholders and do not query live records yet.
-- Dashboard metric cards and attendance page are still placeholders.
+- Dashboard metric cards are still placeholders.
 - A user must have a matching `profiles` row before they can access the dashboard.
 - Member search and plan search inputs are placeholders; real filtering is a future step.
 - Advanced trainer scheduling, booking, and calendar sync were intentionally not added.
 - Online payment gateways, invoices, and complex financial reports were intentionally not added.
+- Advanced scheduling, calendar integration, biometric devices, and hardware check-in integrations were intentionally not added.
