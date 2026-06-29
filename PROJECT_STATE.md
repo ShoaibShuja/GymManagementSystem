@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 4: Trainer management and trainer assignments MVP.
+Phase 5: Manual payment tracking MVP.
 
 ## Completed Setup
 
@@ -38,6 +38,14 @@ Phase 4: Trainer management and trainer assignments MVP.
 - Trainer-to-member assignment feature is complete using the `trainer_member_assignments` table.
 - Admins can assign one trainer to multiple active members and remove assignments.
 - Staff users can view trainers and assigned members without seeing admin-only actions.
+- Manual Payment Tracking page now shows a selected-month payment overview for all members.
+- Payment status is calculated from whether a `payments` record exists for the member and selected month.
+- Expected amount due is calculated from the member's selected membership plan price.
+- Staff and admins can mark members as paid and add optional payment notes.
+- Staff and admins can edit payment notes.
+- Admins can remove payment records after a confirmation popup.
+- Payment history table shows member name, amount, payment month, payment date, recorded-by user, and notes.
+- Payment filters added for month, paid/unpaid status, and member name or phone search.
 
 ## Installed Packages
 
@@ -89,14 +97,14 @@ Phase 4: Trainer management and trainer assignments MVP.
 
 ## Next Step
 
-Build payment tracking MVP with monthly paid/unpaid records, manual mark-as-paid, and payment history.
+Build basic attendance check-in MVP and connect dashboard metric cards to live data.
 
 ## Known Limitations
 
 - Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
 - Dashboard metric cards are placeholders and do not query live records yet.
-- Dashboard metric cards, payments, and attendance pages are still placeholders.
+- Dashboard metric cards and attendance page are still placeholders.
 - A user must have a matching `profiles` row before they can access the dashboard.
 - Member search and plan search inputs are placeholders; real filtering is a future step.
-- Payment logic was intentionally not added in this step.
 - Advanced trainer scheduling, booking, and calendar sync were intentionally not added.
+- Online payment gateways, invoices, and complex financial reports were intentionally not added.
