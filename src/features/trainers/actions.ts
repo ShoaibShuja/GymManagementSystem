@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentProfile } from "@/lib/auth/server";
+import { getCurrentProfile, isAdminProfile } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   assignmentFormSchema,
@@ -26,7 +26,7 @@ function getErrorMessage(error: unknown) {
 async function requireAdminAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin") {
+  if (!isAdminProfile(profile)) {
     throw new Error("Only admins can manage trainers and assignments.");
   }
 }

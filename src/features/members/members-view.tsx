@@ -438,6 +438,7 @@ function MemberForm({
 
 export function MembersView({ role }: { role: AppRole }) {
   const isAdmin = role === "admin";
+  const canManageMembers = isAdmin;
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<MemberWithPlan | null>(
@@ -544,23 +545,26 @@ export function MembersView({ role }: { role: AppRole }) {
             Add members, assign plans, and track membership dates.
           </p>
         </div>
-        <Button
-          disabled={plansQuery.isLoading || plans.length === 0}
-          onClick={() => {
-            setEditingMember(null);
-            setOpen(true);
-          }}
-        >
-          <Plus />
-          Add member
-        </Button>
+        {canManageMembers && (
+          <Button
+            disabled={plansQuery.isLoading || plans.length === 0}
+            onClick={() => {
+              setEditingMember(null);
+              setOpen(true);
+            }}
+          >
+            <Plus />
+            Add member
+          </Button>
+        )}
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Member list</CardTitle>
           <CardDescription>
-            Delete actions are only available to admins.
+            Admins can add, edit, and delete members. Staff can view member
+            records.
           </CardDescription>
           <CardAction>
             <Input
@@ -690,18 +694,20 @@ export function MembersView({ role }: { role: AppRole }) {
                           <CalendarClock />
                           Attendance
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setEditingMember(member);
-                            setOpen(true);
-                          }}
-                        >
-                          <Edit />
-                          Edit
-                        </Button>
-                        {isAdmin && (
+                        {canManageMembers && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingMember(member);
+                              setOpen(true);
+                            }}
+                          >
+                            <Edit />
+                            Edit
+                          </Button>
+                        )}
+                        {canManageMembers && (
                           <Button
                             disabled={deleteMutation.isPending}
                             size="sm"

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
+Phase 8: Role-based access finalized.
 
 ## Completed Setup
 
@@ -38,6 +38,9 @@ Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 - Trainer-to-member assignment feature is complete using the `trainer_member_assignments` table.
 - Admins can assign one trainer to multiple active members and remove assignments.
 - Staff users can view trainers and assigned members without seeing admin-only actions.
+- Admin-only user/profile management is available under Settings > Users for existing profiles.
+- Admins can list profiles and change a user's role between admin and staff.
+- Admins cannot remove their own admin role from the Users page.
 - Manual Payment Tracking page now shows a selected-month payment overview for all members.
 - Payment status is calculated from whether a `payments` record exists for the member and selected month.
 - Expected amount due is calculated from the member's selected membership plan price.
@@ -47,7 +50,7 @@ Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 - Payment history table shows member name, amount, payment month, payment date, recorded-by user, and notes.
 - Payment filters added for month, paid/unpaid status, and member name or phone search.
 - Payment mark-as-paid validation now accepts existing Postgres UUID values used by the seed data and shows readable validation errors.
-- Marking a member as paid now also updates that member's status to active.
+- Marking a member as paid updates the member status to active only when the action is performed by an admin.
 - Basic Attendance page now supports member search, member selection, optional notes, and check-in recording.
 - Attendance check-ins create `attendance_logs` records with member, check-in time, notes, and recorded-by profile.
 - Today's attendance log and recent attendance history tables are live.
@@ -62,6 +65,15 @@ Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 - Trainer filters are complete for name/phone search, trainer status, and specialty.
 - Attendance history filters are complete for member search and date filtering.
 - Membership plan search is now active instead of a placeholder.
+- Role-based access has been finalized for Admin and Staff/Receptionist.
+- Admins can manage members, trainers, membership plans, payments, attendance records, and staff profile roles.
+- Staff users can view members, trainers, plans, dashboard data, payment records, and attendance records.
+- Staff users can record payments, edit payment notes, and record attendance check-ins.
+- Staff users cannot add/edit/delete members, manage plans, manage trainers, manage assignments, delete records, open admin settings, or manage roles.
+- Restricted navigation links are hidden for staff users.
+- Admin-only settings routes show a friendly access denied page if a staff user reaches them directly.
+- A follow-up RLS migration tightens database security so staff cannot write member rows or update attendance rows directly.
+- Auth helper utilities are available for current user, current profile, role checks, and admin requirements.
 
 ## Installed Packages
 
@@ -90,9 +102,9 @@ Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 ## Security Added
 
 - RLS is enabled on all public app tables.
-- Admin users can manage all records.
-- Staff users can view operational records and create/update member, payment, and attendance records.
-- Staff users cannot delete critical records.
+- Admin users can manage operational records and profile roles.
+- Staff users can view operational records, record payments, edit payment notes, and record attendance check-ins.
+- Staff users cannot manage members, plans, trainers, trainer assignments, user roles, or delete records.
 - Profiles are protected so users can only see their own profile unless they are admin.
 
 ## Folder Structure
@@ -109,15 +121,17 @@ Phase 7: Dashboard overview, expiry alerts, and search/filter completion.
 ## Supabase Files
 
 - `supabase/migrations/202606290001_initial_schema.sql`: schema, constraints, indexes, triggers, helper functions, and RLS policies.
+- `supabase/migrations/202606290002_finalize_role_access.sql`: final role access tightening for member/profile/attendance RLS.
 - `supabase/seed.sql`: development seed data.
 
 ## Next Step
 
-Build the admin user management page so gym owners can manage staff profiles and roles from the app.
+Prepare deployment documentation and Supabase setup steps for a production environment.
 
 ## Known Limitations
 
-- Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
+- Signup is not exposed in the app; login accounts should be created through Supabase Auth.
+- The Users page manages existing profile roles only. It does not create Supabase Auth accounts or send invitations.
 - A user must have a matching `profiles` row before they can access the dashboard.
 - Advanced trainer scheduling, booking, and calendar sync were intentionally not added.
 - Online payment gateways, invoices, and complex financial reports were intentionally not added.
