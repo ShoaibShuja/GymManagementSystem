@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 
 export type LoginState = {
   error?: string;
@@ -12,6 +13,12 @@ export async function login(
   _previousState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
+  if (!hasSupabaseEnv()) {
+    return {
+      error: "Supabase is not configured yet.",
+    };
+  }
+
   const email = String(formData.get("email") ?? "")
     .trim()
     .toLowerCase();
