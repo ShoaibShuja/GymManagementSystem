@@ -1,9 +1,14 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 import type { AppRole } from "@/lib/auth/roles";
 
 export async function getCurrentUser() {
+  if (!hasSupabaseEnv()) {
+    return null;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,6 +23,10 @@ export async function getCurrentUser() {
 }
 
 export async function getCurrentProfile() {
+  if (!hasSupabaseEnv()) {
+    return null;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

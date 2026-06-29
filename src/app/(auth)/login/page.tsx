@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/features/auth/login-form";
 import { getCurrentProfile } from "@/lib/auth/server";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ export const metadata = {
 };
 
 export default async function LoginPage() {
+  const isSupabaseConfigured = hasSupabaseEnv();
   const profile = await getCurrentProfile();
 
   if (profile) {
@@ -47,7 +49,19 @@ export default async function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LoginForm />
+            {isSupabaseConfigured ? (
+              <LoginForm />
+            ) : (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+                <p className="font-medium">Supabase is not configured yet.</p>
+                <p className="mt-2">
+                  Create `.env.local` from `.env.example`, then add{" "}
+                  <code>NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+                  <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> from your Supabase
+                  project API settings.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
