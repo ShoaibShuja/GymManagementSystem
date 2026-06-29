@@ -71,7 +71,15 @@ import {
 
 const membersQueryKey = ["members"] as const;
 const activePlansQueryKey = ["membership-plans", "active"] as const;
+const memberPaymentsQueryKey = "member-month-payments";
 const memberAttendanceQueryKey = "member-attendance";
+
+type MemberStatusFilter = "all" | MemberWithPlan["status"];
+type MemberPaymentFilter = "all" | "paid" | "unpaid";
+type MemberMonthPayment = {
+  member_id: string;
+  status: "paid" | "unpaid";
+};
 
 async function ensureAction(result: { ok: boolean; error?: string }) {
   if (!result.ok) {
@@ -131,6 +139,20 @@ async function fetchActivePlans() {
   return (data ?? []) as MemberPlanSummary[];
 }
 
+async function fetchMemberMonthPayments(paymentMonth: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("payments")
+    .select("member_id, status")
+    .eq("payment_month", paymentMonth);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as MemberMonthPayment[];
+}
+
 async function fetchMemberAttendance(memberId: string) {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -169,6 +191,14 @@ function formatDate(value: string) {
 
 function formatDateTime(value: string) {
   return format(parseISO(value), "MMM d, yyyy h:mm a");
+}
+
+function getCurrentMonth() {
+  return format(new Date(), "yyyy-MM");
+}
+
+function toPaymentMonth(monthValue: string) {
+  return `${monthValue}-01`;
 }
 
 function statusVariant(status: MemberWithPlan["status"]) {
@@ -418,6 +448,13 @@ export function MembersView({ role }: { role: AppRole }) {
   );
   const [attendanceMember, setAttendanceMember] =
     useState<MemberWithPlan | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<MemberStatusFilter>("all");
+  const [planFilter, setPlanFilter] = useState("all");
+  const [paymentFilter, setPaymentFilter] =
+    useState<MemberPaymentFilter>("all");
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth);
+  const paymentMonth = toPaymentMonth(selectedMonth);
 
   const membersQuery = useQuery({
     queryKey: membersQueryKey,
@@ -431,6 +468,10 @@ export function MembersView({ role }: { role: AppRole }) {
     queryKey: [memberAttendanceQueryKey, attendanceMember?.id],
     queryFn: () => fetchMemberAttendance(attendanceMember?.id ?? ""),
     enabled: !!attendanceMember,
+  });
+  const memberPaymentsQuery = useQuery({
+    queryKey: [memberPaymentsQueryKey, paymentMonth],
+    queryFn: () => fetchMemberMonthPayments(paymentMonth),
   });
 
   const saveMutation = useMutation({
@@ -462,8 +503,37 @@ export function MembersView({ role }: { role: AppRole }) {
     onError: (error) => toast.error(error.message),
   });
 
-  const members = membersQuery.data ?? [];
-  const plans = plansQuery.data ?? [];
+  const members = useMemo(() => membersQuery.data ?? [], [membersQuery.data]);
+  const plans = useMemo(() => plansQuery.data ?? [], [plansQuery.data]);
+  const paidMemberIds = useMemo(
+    () =>
+      new Set(
+        (memberPaymentsQuery.data ?? [])
+          .filter((payment) => payment.status === "paid")
+          .map((payment) => payment.member_id),
+      ),
+    [memberPaymentsQuery.data],
+  );
+  const filteredMembers = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return members.filter((member) => {
+      const isPaid = paidMemberIds.has(member.id);
+      const matchesSearch =
+        !normalizedSearch ||
+        member.name.toLowerCase().includes(normalizedSearch) ||
+        member.phone.toLowerCase().includes(normalizedSearch);
+      const matchesStatus =
+        statusFilter === "all" || member.status === statusFilter;
+      const matchesPlan =
+        planFilter === "all" || member.membership_plan_id === planFilter;
+      const matchesPayment =
+        paymentFilter === "all" ||
+        (paymentFilter === "paid" ? isPaid : !isPaid);
+
+      return matchesSearch && matchesStatus && matchesPlan && matchesPayment;
+    });
+  }, [members, paidMemberIds, paymentFilter, planFilter, search, statusFilter]);
 
   return (
     <div className="space-y-4">
@@ -495,23 +565,89 @@ export function MembersView({ role }: { role: AppRole }) {
           <CardAction>
             <Input
               className="w-60"
-              disabled
-              placeholder="Search by name or phone coming soon"
+              placeholder="Search name or phone"
+              value={search}
+              onChange={(event) => setSearch(event.currentTarget.value)}
             />
           </CardAction>
         </CardHeader>
-        <CardContent>
-          {membersQuery.isLoading ? (
+        <CardContent className="space-y-4">
+          <div className="grid gap-2 md:grid-cols-4">
+            <Select
+              value={statusFilter}
+              onValueChange={(value) =>
+                setStatusFilter(value as MemberStatusFilter)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="expired">Expired</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={planFilter} onValueChange={setPlanFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All plans</SelectItem>
+                {plans.map((plan) => (
+                  <SelectItem key={plan.id} value={plan.id}>
+                    {plan.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={paymentFilter}
+              onValueChange={(value) =>
+                setPaymentFilter(value as MemberPaymentFilter)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All payments</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="unpaid">Unpaid</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              aria-label="Payment filter month"
+              type="month"
+              value={selectedMonth}
+              onChange={(event) => setSelectedMonth(event.currentTarget.value)}
+            />
+          </div>
+
+          {membersQuery.isLoading || memberPaymentsQuery.isLoading ? (
             <MembersSkeleton />
           ) : membersQuery.isError ? (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
               Could not load members. {membersQuery.error.message}
+            </div>
+          ) : memberPaymentsQuery.isError ? (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              Could not load payment filters.{" "}
+              {memberPaymentsQuery.error.message}
             </div>
           ) : members.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <p className="font-medium">No members yet</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Add the first member after creating at least one active plan.
+              </p>
+            </div>
+          ) : filteredMembers.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center">
+              <p className="font-medium">No matching members</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Adjust the search text, status, plan, or payment filter.
               </p>
             </div>
           ) : (
@@ -528,7 +664,7 @@ export function MembersView({ role }: { role: AppRole }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {members.map((member) => (
+                {filteredMembers.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell>{member.phone}</TableCell>

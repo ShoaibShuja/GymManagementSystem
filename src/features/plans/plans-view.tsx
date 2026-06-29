@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit, Plus, PowerOff } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -203,6 +203,7 @@ export function PlansView({ role }: { role: AppRole }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<MembershipPlan | null>(null);
+  const [search, setSearch] = useState("");
 
   const plansQuery = useQuery({
     queryKey: plansQueryKey,
@@ -237,7 +238,18 @@ export function PlansView({ role }: { role: AppRole }) {
     onError: (error) => toast.error(error.message),
   });
 
-  const plans = plansQuery.data ?? [];
+  const plans = useMemo(() => plansQuery.data ?? [], [plansQuery.data]);
+  const filteredPlans = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return plans;
+    }
+
+    return plans.filter((plan) =>
+      plan.name.toLowerCase().includes(normalizedSearch),
+    );
+  }, [plans, search]);
 
   return (
     <div className="space-y-4">
@@ -272,8 +284,9 @@ export function PlansView({ role }: { role: AppRole }) {
           <CardAction>
             <Input
               className="w-56"
-              disabled
-              placeholder="Search plans coming soon"
+              placeholder="Search plans"
+              value={search}
+              onChange={(event) => setSearch(event.currentTarget.value)}
             />
           </CardAction>
         </CardHeader>
@@ -292,6 +305,13 @@ export function PlansView({ role }: { role: AppRole }) {
                 members.
               </p>
             </div>
+          ) : filteredPlans.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center">
+              <p className="font-medium">No matching plans</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Adjust the plan search text.
+              </p>
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -306,7 +326,7 @@ export function PlansView({ role }: { role: AppRole }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {plans.map((plan) => (
+                {filteredPlans.map((plan) => (
                   <TableRow key={plan.id}>
                     <TableCell className="font-medium">{plan.name}</TableCell>
                     <TableCell>{plan.duration_months} months</TableCell>
