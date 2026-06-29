@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentProfile } from "@/lib/auth/server";
+import { getCurrentProfile, isAdminProfile } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   memberFormSchema,
@@ -41,15 +41,15 @@ function getErrorMessage(error: unknown) {
 async function requireMemberWriteAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin" && profile?.role !== "staff") {
-    throw new Error("You do not have permission to manage members.");
+  if (!isAdminProfile(profile)) {
+    throw new Error("Only admins can manage members.");
   }
 }
 
 async function requireAdminAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin") {
+  if (!isAdminProfile(profile)) {
     throw new Error("Only admins can delete members.");
   }
 }

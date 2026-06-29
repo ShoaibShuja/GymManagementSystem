@@ -3,7 +3,11 @@
 import { subMinutes } from "date-fns";
 import { z } from "zod";
 
-import { getCurrentProfile } from "@/lib/auth/server";
+import {
+  canUseOperationsProfile,
+  getCurrentProfile,
+  isAdminProfile,
+} from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   attendanceCheckInSchema,
@@ -31,7 +35,7 @@ function getErrorMessage(error: unknown) {
 async function requireAttendanceWriteAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin" && profile?.role !== "staff") {
+  if (!profile || !canUseOperationsProfile(profile)) {
     throw new Error("You do not have permission to record attendance.");
   }
 
@@ -41,7 +45,7 @@ async function requireAttendanceWriteAction() {
 async function requireAdminAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin") {
+  if (!profile || !isAdminProfile(profile)) {
     throw new Error("Only admins can delete attendance records.");
   }
 }

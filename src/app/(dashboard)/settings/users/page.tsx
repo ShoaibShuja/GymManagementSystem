@@ -1,17 +1,12 @@
-import { UserRound } from "lucide-react";
-
-import { SectionPlaceholder } from "@/components/layout/section-placeholder";
+import { UsersView } from "@/features/users/users-view";
+import { requireAdmin } from "@/lib/auth/server";
 
 export const metadata = {
   title: "Users",
 };
 
-export default function UsersPage() {
-  return (
-    <SectionPlaceholder
-      title="Users"
-      description="Admin-only user and role management will be added after authentication is finalized."
-      icon={UserRound}
-    />
-  );
+export default async function UsersPage() {
+  const profile = await requireAdmin();
+
+  return <UsersView currentProfileId={profile.id} />;
 }

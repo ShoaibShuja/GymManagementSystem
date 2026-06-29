@@ -3,7 +3,11 @@
 import { format } from "date-fns";
 import { z } from "zod";
 
-import { getCurrentProfile } from "@/lib/auth/server";
+import {
+  canUseOperationsProfile,
+  getCurrentProfile,
+  isAdminProfile,
+} from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   markPaidSchema,
@@ -33,7 +37,7 @@ function getErrorMessage(error: unknown) {
 async function requirePaymentWriteAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin" && profile?.role !== "staff") {
+  if (!profile || !canUseOperationsProfile(profile)) {
     throw new Error("You do not have permission to manage payments.");
   }
 
@@ -43,9 +47,25 @@ async function requirePaymentWriteAction() {
 async function requireAdminAction() {
   const profile = await getCurrentProfile();
 
-  if (profile?.role !== "admin") {
+  if (!profile || !isAdminProfile(profile)) {
     throw new Error("Only admins can delete payments.");
   }
+}
+
+async function activateMemberAfterAdminPayment(memberId: string) {
+  const profile = await getCurrentProfile();
+
+  if (!profile || !isAdminProfile(profile)) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("members")
+    .update({ status: "active" })
+    .eq("id", memberId);
+
+  return error;
 }
 
 export async function markPaymentPaidAction(
@@ -85,10 +105,9 @@ export async function markPaymentPaidAction(
         return { ok: false, error: error.message };
       }
 
-      const { error: memberError } = await supabase
-        .from("members")
-        .update({ status: "active" })
-        .eq("id", parsed.member_id);
+      const memberError = await activateMemberAfterAdminPayment(
+        parsed.member_id,
+      );
 
       if (memberError) {
         return { ok: false, error: memberError.message };
@@ -112,10 +131,7 @@ export async function markPaymentPaidAction(
       return { ok: false, error: error.message };
     }
 
-    const { error: memberError } = await supabase
-      .from("members")
-      .update({ status: "active" })
-      .eq("id", parsed.member_id);
+    const memberError = await activateMemberAfterAdminPayment(parsed.member_id);
 
     if (memberError) {
       return { ok: false, error: memberError.message };

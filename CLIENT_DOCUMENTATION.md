@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-The Dashboard, Membership Plans, Members, Trainers, Payments, and Attendance now have real tables, forms, totals, alerts, and search/filter controls.
+The Dashboard, Membership Plans, Members, Trainers, Payments, Attendance, and Users pages now have real tables, forms, totals, alerts, search/filter controls, and role-based access.
 
 ## Basic Project Organization
 
@@ -50,10 +50,51 @@ The Dashboard, Membership Plans, Members, Trainers, Payments, and Attendance now
 
 There are two app roles:
 
-- Admin: can manage all records, plans, trainers, members, payments, attendance, and staff profiles.
-- Staff: can view daily gym records and help with member operations, payments, and attendance, but cannot delete critical records or manage roles.
+- Admin: can manage members, trainers, membership plans, payments, attendance records, and staff profile roles.
+- Staff: can view daily gym records, record payments, edit payment notes, and record attendance check-ins.
 
 Admin users see admin-only navigation such as Settings and Users. Staff users do not see those links.
+
+The database security rules also enforce these permissions. Hiding buttons in the app is only for a cleaner screen; it is not the only security layer.
+
+## Admin Role
+
+Admins can:
+
+- Add, edit, and delete members.
+- Add, edit, and deactivate membership plans.
+- Add, edit, and deactivate trainers.
+- Manage trainer assignments.
+- Record and edit manual payments.
+- Remove payment records.
+- Record attendance.
+- Delete attendance records.
+- Open Settings and Users.
+- Change existing profile roles between Admin and Staff.
+
+Admins should be limited to trusted owners or managers because they can change important records.
+
+## Staff Role
+
+Staff or receptionists can:
+
+- View dashboard numbers and expiry alerts.
+- View members and member attendance history.
+- View trainers and trainer assignments.
+- View membership plans.
+- Record manual payments and edit payment notes.
+- Record attendance check-ins.
+- Search and filter records for daily work.
+
+Staff cannot:
+
+- Add, edit, or delete members.
+- Add, edit, or deactivate plans.
+- Add, edit, or deactivate trainers.
+- Manage trainer assignments.
+- Delete payments or attendance records.
+- Open admin settings.
+- Manage user roles.
 
 ## Login
 
@@ -135,7 +176,7 @@ To add a member:
 
 The membership end date is calculated automatically from the selected plan. For example, if a member starts a 1-month plan on June 1, the end date becomes June 30. If the plan is 3 months, the system counts 3 months from the start date and uses the day before as the end date.
 
-Admins and staff can add and edit members. Only admins can delete members.
+Only admins can add, edit, or delete members. Staff can view member records, search and filter members, and open member attendance history.
 When an admin clicks Delete, the app asks for confirmation before permanently removing the member record.
 
 ## Member Status
@@ -211,7 +252,7 @@ To mark a member as paid:
 
 Marking as paid creates a manual payment record for that member and month. It does not collect money online.
 The system accepts the member and plan IDs already stored in the database when saving a payment.
-After a member is marked as paid, their member status is set to Active.
+When an admin marks a member as paid, the system can also set that member's status to Active. Staff can record the payment, but they do not have permission to edit the member profile.
 
 Payment history shows recent payment records across all months. It includes the member name, amount, payment month, payment date, staff member who recorded it, and notes.
 
@@ -241,6 +282,14 @@ To prevent accidental double entries, the same member cannot be checked in again
 
 Admins can delete attendance records after confirmation. Staff can record and view attendance, but they do not see the delete action.
 
+## User Management
+
+The Users page is admin-only.
+
+It lists existing app profiles and lets an admin change a profile role between Admin and Staff. The current admin cannot remove their own admin role from this page, which helps prevent accidental lockout.
+
+The app does not create login accounts or send invitations. New login accounts should still be created in Supabase Auth, then the matching profile can be managed in the app.
+
 ## Current Next Step
 
-The next step is to build the admin user management page so the gym owner can manage staff profiles and roles from inside the app.
+The next step is to prepare deployment documentation and Supabase setup steps for production use.
