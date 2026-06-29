@@ -46,6 +46,8 @@ Phase 5: Manual payment tracking MVP.
 - Admins can remove payment records after a confirmation popup.
 - Payment history table shows member name, amount, payment month, payment date, recorded-by user, and notes.
 - Payment filters added for month, paid/unpaid status, and member name or phone search.
+- Payment mark-as-paid validation now accepts existing Postgres UUID values used by the seed data and shows readable validation errors.
+- Marking a member as paid now also updates that member's status to active.
 
 ## Installed Packages
 

@@ -342,6 +342,7 @@ export function PaymentsView({ role }: { role: AppRole }) {
         queryKey: [monthPaymentsQueryKey, paymentMonth],
       }),
       queryClient.invalidateQueries({ queryKey: paymentHistoryQueryKey }),
+      queryClient.invalidateQueries({ queryKey: ["members"] }),
     ]);
   };
 

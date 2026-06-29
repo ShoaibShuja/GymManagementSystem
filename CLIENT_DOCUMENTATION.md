@@ -178,6 +178,8 @@ To mark a member as paid:
 6. Save the payment.
 
 Marking as paid creates a manual payment record for that member and month. It does not collect money online.
+The system accepts the member and plan IDs already stored in the database when saving a payment.
+After a member is marked as paid, their member status is set to Active.
 
 Payment history shows recent payment records across all months. It includes the member name, amount, payment month, payment date, staff member who recorded it, and notes.
 

@@ -6,9 +6,11 @@ export const paymentNotesSchema = z.object({
   notes: z.string().trim().optional(),
 });
 
+const databaseIdSchema = z.string().trim().min(1, "Required.");
+
 export const markPaidSchema = paymentNotesSchema.extend({
-  member_id: z.string().uuid("Member is required."),
-  membership_plan_id: z.string().uuid().nullable(),
+  member_id: databaseIdSchema,
+  membership_plan_id: databaseIdSchema.nullable(),
   amount: z.number().min(0, "Amount cannot be negative."),
   payment_month: z.string().regex(/^\d{4}-\d{2}-01$/, "Invalid payment month."),
 });

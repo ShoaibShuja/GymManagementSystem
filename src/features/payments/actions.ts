@@ -1,6 +1,7 @@
 "use server";
 
 import { format } from "date-fns";
+import { z } from "zod";
 
 import { getCurrentProfile } from "@/lib/auth/server";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,10 @@ function emptyToNull(value: string | undefined) {
 }
 
 function getErrorMessage(error: unknown) {
+  if (error instanceof z.ZodError) {
+    return error.issues.map((issue) => issue.message).join(" ");
+  }
+
   return error instanceof Error ? error.message : "Something went wrong.";
 }
 
@@ -80,6 +85,15 @@ export async function markPaymentPaidAction(
         return { ok: false, error: error.message };
       }
 
+      const { error: memberError } = await supabase
+        .from("members")
+        .update({ status: "active" })
+        .eq("id", parsed.member_id);
+
+      if (memberError) {
+        return { ok: false, error: memberError.message };
+      }
+
       return { ok: true };
     }
 
@@ -96,6 +110,15 @@ export async function markPaymentPaidAction(
 
     if (error) {
       return { ok: false, error: error.message };
+    }
+
+    const { error: memberError } = await supabase
+      .from("members")
+      .update({ status: "active" })
+      .eq("id", parsed.member_id);
+
+    if (memberError) {
+      return { ok: false, error: memberError.message };
     }
 
     return { ok: true };
