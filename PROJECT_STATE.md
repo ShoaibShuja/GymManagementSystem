@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 2: Supabase database and auth foundation.
+Phase 2: Authentication flow and protected dashboard shell.
 
 ## Completed Setup
 
@@ -19,6 +19,14 @@ Phase 2: Supabase database and auth foundation.
 - RLS policies added for admin and staff access.
 - Development seed data added for plans, trainers, members, payments, and attendance.
 - Typed Supabase clients and server auth helpers added.
+- Login page added with Supabase email/password authentication.
+- Logout action added.
+- Next.js `proxy.ts` added to refresh Supabase auth sessions.
+- Protected dashboard route group added.
+- Responsive dashboard shell added with sidebar, top bar, mobile navigation, user profile display, and logout.
+- Placeholder pages added for Dashboard, Members, Trainers, Plans, Payments, Attendance, Settings, and Users.
+- Role-aware navigation added so staff users do not see admin-only links.
+- Admin-only settings routes are protected server-side.
 
 ## Installed Packages
 
@@ -70,4 +78,11 @@ Phase 2: Supabase database and auth foundation.
 
 ## Next Step
 
-Build the authentication screens, protected dashboard route group, and first admin/staff login flow.
+Build the first real feature workflow: member management CRUD with Zod validation, React Hook Form, Supabase queries, and table search/filter UI.
+
+## Known Limitations
+
+- Signup is not exposed in the app; users should be created through Supabase Auth or a future admin-only user management page.
+- Dashboard metric cards are placeholders and do not query live records yet.
+- Feature pages are protected placeholders only; CRUD workflows are not built yet.
+- A user must have a matching `profiles` row before they can access the dashboard.

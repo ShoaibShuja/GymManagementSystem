@@ -22,7 +22,9 @@ The project foundation is ready. The app now has the main development tools, UI 
 
 The database design has also been added. It stores gym members, trainers, membership plans, trainer assignments, manual payments, attendance check-ins, and user profiles.
 
-The app screens are not built yet. Member pages, trainer pages, payments, attendance, login, and the dashboard will be added in the next phases.
+The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and placeholder pages for each gym section.
+
+Member pages, trainer pages, payments, and attendance are still placeholders. The real forms, tables, and workflows will be added in the next phases.
 
 ## Basic Project Organization
 
@@ -51,6 +53,28 @@ There are two app roles:
 - Admin: can manage all records, plans, trainers, members, payments, attendance, and staff profiles.
 - Staff: can view daily gym records and help with member operations, payments, and attendance, but cannot delete critical records or manage roles.
 
+Admin users see admin-only navigation such as Settings and Users. Staff users do not see those links.
+
+## Login
+
+Users sign in with an email and password created in Supabase. A user also needs a matching app profile before the dashboard opens.
+
+There is no public signup page. This keeps the app safer for a real gym because new staff accounts should be created by the owner or administrator.
+
+## Dashboard Navigation
+
+The dashboard has links for:
+
+- Dashboard
+- Members
+- Trainers
+- Plans
+- Payments
+- Attendance
+- Settings and Users for admins only
+
+On desktop, the navigation is shown in the sidebar. On mobile, it opens from the menu button at the top.
+
 ## Payments
 
 Payments are tracked manually. The system records whether a member paid for a month, the amount, the payment date, and notes.
@@ -59,4 +83,4 @@ The app does not process online payments, charge cards, or connect to a payment 
 
 ## Current Next Step
 
-The next step is to build the login screens, protect the dashboard, and connect the app pages to the new database.
+The next step is to build the first real workflow: adding, editing, searching, and managing gym members.
