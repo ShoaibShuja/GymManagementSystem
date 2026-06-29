@@ -1,337 +1,366 @@
 # Client Documentation
 
-## What This Project Is
+## 1. Project Overview
 
-This project is a Gym Management System for a small gym. It will help the gym owner manage members, trainers, membership plans, payments, attendance, and expiry alerts from one simple web app.
+The Gym Management System is a simple web app for running a small gym. It helps the owner and staff keep daily gym records in one place instead of using paper notebooks or scattered spreadsheets.
 
-## Technology Used
+The app helps with:
 
-The project uses modern web technology:
+- Members and their membership dates.
+- Trainers and trainer assignments.
+- Membership plans and prices.
+- Manual monthly payment tracking.
+- Attendance check-ins.
+- Dashboard totals and expiry alerts.
+- Admin and staff access control.
 
-- Next.js for the website and app screens.
-- TypeScript to reduce coding mistakes.
-- Tailwind CSS and shadcn/ui for a clean, professional design.
-- Supabase for the database and login system.
-- TanStack Query for keeping app data fresh.
-- React Hook Form and Zod for reliable forms.
-- Vercel for hosting.
+The app does not do:
 
-## What Has Been Completed So Far
+- Online card payments.
+- Public customer signup.
+- Email or SMS marketing.
+- Trainer scheduling or booking.
+- Inventory or equipment tracking.
+- Multiple branch management.
+- Advanced business analytics.
 
-The project foundation is ready. The app now has the main development tools, UI component system, styling setup, Supabase connection helpers, and basic project folders.
+## 2. Login Guide
 
-The database design has also been added. It stores gym members, trainers, membership plans, trainer assignments, manual payments, attendance check-ins, and user profiles.
+Open the app and go to the login page. Enter the email and password created for you by the gym administrator.
 
-The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
+There is no public signup page. New login accounts must be created in Supabase by a developer or administrator, and each login user must also have a matching app profile.
 
-The Dashboard, Membership Plans, Members, Trainers, Payments, Attendance, Settings, and Users pages now have real tables, forms, totals, alerts, search/filter controls, role-based access, and a polished responsive interface.
+There are two user roles:
 
-## Basic Project Organization
+- Admin: full access. Admins can manage members, trainers, plans, payments, attendance, and user roles.
+- Staff: limited access. Staff can view daily records, record attendance, record payments, and edit payment notes. Staff cannot manage members, trainers, plans, assignments, roles, or delete records.
 
-- `src/app` holds the app pages and main layout.
-- `src/components` holds reusable screen parts.
-- `src/components/ui` holds ready-made UI pieces like buttons, cards, inputs, tables, dialogs, and badges.
-- `src/features` will hold gym features such as members, trainers, payments, and attendance.
-- `src/lib` holds shared helper code, including Supabase setup.
-- `src/schemas` will hold form validation rules.
-- `src/types` holds shared TypeScript types.
+If you can log in but cannot open a page or button, your role may not allow that action.
 
-## What The Database Stores
+## 3. Dashboard Guide
 
-- User profiles: the people who can log in to the app.
-- Membership plans: Monthly, Quarterly, and Yearly plans.
-- Members: gym member contact details, membership dates, status, and notes.
-- Trainers: trainer contact details, specialty, status, and notes.
-- Trainer assignments: which trainer is assigned to which member.
-- Payments: manual monthly payment records.
-- Attendance: member check-in records.
+The Dashboard gives a quick view of the gym today.
 
-## User Roles
+Dashboard cards:
 
-There are two app roles:
-
-- Admin: can manage members, trainers, membership plans, payments, attendance records, and staff profile roles.
-- Staff: can view daily gym records, record payments, edit payment notes, and record attendance check-ins.
-
-Admin users see admin-only navigation such as Settings and Users. Staff users do not see those links.
-
-The database security rules also enforce these permissions. Hiding buttons in the app is only for a cleaner screen; it is not the only security layer.
-
-## Admin Role
-
-Admins can:
-
-- Add, edit, and delete members.
-- Add, edit, and deactivate membership plans.
-- Add, edit, and deactivate trainers.
-- Manage trainer assignments.
-- Record and edit manual payments.
-- Remove payment records.
-- Record attendance.
-- Delete attendance records.
-- Open Settings and Users.
-- Change existing profile roles between Admin and Staff.
-
-Admins should be limited to trusted owners or managers because they can change important records.
-
-## Staff Role
-
-Staff or receptionists can:
-
-- View dashboard numbers and expiry alerts.
-- View members and member attendance history.
-- View trainers and trainer assignments.
-- View membership plans.
-- Record manual payments and edit payment notes.
-- Record attendance check-ins.
-- Search and filter records for daily work.
-
-Staff cannot:
-
-- Add, edit, or delete members.
-- Add, edit, or deactivate plans.
-- Add, edit, or deactivate trainers.
-- Manage trainer assignments.
-- Delete payments or attendance records.
-- Open admin settings.
-- Manage user roles.
-
-## Login
-
-Users sign in with an email and password created in Supabase. A user also needs a matching app profile before the dashboard opens.
-
-There is no public signup page. This keeps the app safer for a real gym because new staff accounts should be created by the owner or administrator.
-
-## Dashboard Navigation
-
-The dashboard has links for:
-
-- Dashboard
-- Members
-- Trainers
-- Plans
-- Payments
-- Attendance
-- Settings and Users for admins only
-
-On desktop, the navigation is shown in the sidebar. On mobile, it opens from the menu button at the top.
-
-## User Interface Guide
-
-The app is designed to be simple for a small gym team.
-
-- Use the sidebar on desktop to move between pages.
-- Use the menu button on mobile to open the same navigation.
-- Main actions, such as Add member or Mark paid, appear near the top of the relevant page or inside the table row they affect.
-- Search boxes and filters sit above the related table.
-- Status badges show important states such as Active, Inactive, Expired, Paid, and Unpaid.
-- Destructive actions such as Delete, Remove, or Deactivate use stronger styling and ask for confirmation where needed.
-- Empty screens explain what to do next instead of showing a blank page.
-- Loading skeletons show that the app is fetching data.
-- Success and error messages appear as small notifications after actions.
-
-On smaller screens, tables can scroll sideways. Forms and dialogs stay within the screen so staff can complete work from a phone.
-
-## Dashboard Overview
-
-The Dashboard gives the owner and staff a quick daily summary.
-
-It shows:
-
-- Active members: members currently marked as Active.
-- Inactive members: members kept in the system but not currently active.
-- Expired members: members whose status is Expired.
-- Pending payments: members who do not have a paid payment record for the current month.
-- Collected this month: total manual payment amount recorded for the current month.
-- Expiring soon: members whose membership end date is inside the alert window.
+- Active members: members currently marked as active.
+- Inactive members: members kept in records but not currently active.
+- Expired members: members whose status is expired.
+- Pending payments: members who do not have a paid record for the current month.
+- Collected this month: total manual payments recorded as paid this month.
+- Expiring soon: memberships ending within the selected alert window.
 - Today's attendance: check-ins recorded today.
 
-These numbers are for daily business tracking. They are intentionally simple and do not include advanced charts or complex analytics.
+Expiry alerts show members whose membership end date is close. The Dashboard has an "Expiry alert days" field. It starts at 7 days, but you can change it from 1 to 60 days while viewing the Dashboard.
 
-## Expiry Alerts
+Pending payments are based on the selected current month. If a member does not have a paid payment record for that month, they are counted as pending.
 
-The Dashboard shows a Membership Expiry Alerts list.
+## 4. Members Guide
 
-By default, it shows members whose membership ends within 7 days. The alert days field can be changed on the Dashboard if the gym wants to look further ahead.
+The Members page stores member contact details, membership plan, status, join date, membership dates, and notes.
 
-Each alert shows the member name, phone number, plan, status, end date, and how many days are left. This helps staff follow up before a membership expires.
+To add a member as an Admin:
 
-## Membership Plans
-
-Membership plans are the packages the gym sells, such as Monthly, Quarterly, or Yearly.
-
-The Plans page has a search box to find plans by name.
-
-To add a membership plan:
-
-1. Open Plans from the dashboard menu.
-2. Click New plan.
-3. Enter the plan name, duration in months, and price.
-4. Click Save plan.
-
-Admins can edit a plan later. Admins can also deactivate a plan. Deactivating is safer than deleting because old member records can still show which plan they used.
-
-Staff users can view plans, but plan creation and editing are admin-only.
-
-## Members
-
-The Members page shows each member's name, phone number, plan, status, join date, and membership end date.
-
-The Members page can be searched and filtered. Staff can search by member name or phone number, filter by member status, filter by membership plan, and filter by paid or unpaid payment state for a selected month.
-
-To add a member:
-
-1. Open Members from the dashboard menu.
+1. Open Members.
 2. Click Add member.
 3. Enter the member name and phone number.
-4. Select the member status.
-5. Select a membership plan.
-6. Choose the membership start date.
-7. Add notes if needed.
-8. Click Save member.
+4. Add email, address, and notes if needed.
+5. Choose a status.
+6. Choose a membership plan.
+7. Choose the membership start date.
+8. Save the member.
 
-The membership end date is calculated automatically from the selected plan. For example, if a member starts a 1-month plan on June 1, the end date becomes June 30. If the plan is 3 months, the system counts 3 months from the start date and uses the day before as the end date.
+To edit a member as an Admin:
 
-Only admins can add, edit, or delete members. Staff can view member records, search and filter members, and open member attendance history.
-When an admin clicks Delete, the app asks for confirmation before permanently removing the member record.
+1. Open Members.
+2. Find the member using search or filters.
+3. Click Edit.
+4. Update the details.
+5. Save the changes.
 
-## Member Status
+To deactivate a member, edit the member and change the status to Inactive. This keeps the member in the records.
 
-- Active means the member currently has an active membership.
-- Inactive means the member is not currently using the gym but is kept in the records.
-- Expired means the member's membership period has ended or needs renewal.
+To delete a member as an Admin, click Delete and confirm. Deleting permanently removes the member record, so use it carefully. Staff users cannot delete members.
 
-## Trainers
+Membership dates:
 
-The Trainers page stores trainer profiles and shows which members are assigned to each trainer.
+- The start date is the date the membership begins.
+- The end date is calculated from the selected plan duration.
+- A 1-month plan starting on June 1 ends on June 30.
+- A 3-month plan starting on June 1 ends on August 31.
 
-The Trainers page can be searched by trainer name or phone number. It can also be filtered by Active or Inactive status and by specialty.
+Member status:
 
-To add a trainer:
+- Active: the member currently uses the gym.
+- Inactive: the member is kept in records but is not currently active.
+- Expired: the membership needs renewal or follow-up.
 
-1. Open Trainers from the dashboard menu.
+## 5. Trainers Guide
+
+The Trainers page stores trainer name, phone, specialty, status, notes, and assigned members.
+
+To add a trainer as an Admin:
+
+1. Open Trainers.
 2. Click Add trainer.
 3. Enter the trainer name.
 4. Add phone, specialty, and notes if needed.
 5. Choose Active or Inactive.
-6. Click Save trainer.
+6. Save the trainer.
 
-Admins can edit trainers later. Admins can also deactivate a trainer instead of deleting the trainer record. This keeps old records safer.
+To assign a trainer to a member as an Admin:
 
-Staff users can view trainers and assigned members, but they cannot add, edit, deactivate, assign, or remove trainer assignments.
-
-## Trainer Assignments
-
-Trainer assignments connect trainers to members. One trainer can be assigned to many members.
-
-To assign a trainer to a member:
-
-1. Open Trainers from the dashboard menu.
+1. Open Trainers.
 2. Find the trainer.
-3. Click Assignments.
-4. Select an active member from the list.
+3. Open Assignments.
+4. Select an active member.
 5. Click Assign.
 
-To remove a trainer assignment:
+To remove an assignment as an Admin:
 
 1. Open the trainer's Assignments window.
 2. Find the assigned member.
 3. Click Remove.
 
-Removing an assignment only removes the trainer-member connection. It does not delete the trainer or the member.
+Removing an assignment only removes the trainer-member link. It does not delete the trainer or member.
 
-## Payments
+Staff can view trainers and assignments, but staff cannot add trainers or manage assignments.
 
-Payments are tracked manually. The system records whether a member paid for a month, the amount, the payment date, who recorded it, and notes.
+## 6. Plans Guide
 
-The app does not process online payments, charge cards, or connect to a payment gateway.
+Membership plans control the price and duration of a member's membership.
 
-To check who paid:
+Common plans are:
 
-1. Open Payments from the dashboard menu.
-2. Choose the month at the top of the page.
-3. Use the Paid, Unpaid, or All filter.
+- Monthly: usually 1 month.
+- Quarterly: usually 3 months.
+- Yearly: usually 12 months.
+
+Plan price affects the expected payment amount on the Payments page. If a member is assigned to a Monthly plan, the Monthly plan price is used as the expected amount.
+
+Plan duration affects the member's membership end date. When you choose a plan and start date for a member, the app calculates the end date from the plan duration.
+
+Only Admin users can add, edit, or deactivate plans. Staff users can view plans.
+
+## 7. Payments Guide
+
+Payments are manual. The app records that a payment happened, but it does not collect money online.
+
+To check paid and unpaid members:
+
+1. Open Payments.
+2. Choose the payment month.
+3. Use the All, Paid, or Unpaid filter.
 4. Search by member name or phone if needed.
 
-The amount due comes from the member's selected membership plan. If the member is on the Monthly plan, the page uses the Monthly plan price. If no payment record exists for that member and month, the member is shown as Unpaid.
-
-Payment filters include month selection, Paid/Unpaid/All status, and member name or phone search.
-
-To mark a member as paid:
+To mark a payment as paid:
 
 1. Open Payments.
 2. Choose the correct month.
-3. Find the member in the overview table.
+3. Find the member.
 4. Click Mark paid.
 5. Add notes if needed.
 6. Save the payment.
 
-Marking as paid creates a manual payment record for that member and month. It does not collect money online.
-The system accepts the member and plan IDs already stored in the database when saving a payment.
-When an admin marks a member as paid, the system can also set that member's status to Active. Staff can record the payment, but they do not have permission to edit the member profile.
+Payment history shows saved payment records. It includes the member, amount, payment month, payment date, who recorded it, and notes.
 
-Payment history shows recent payment records across all months. It includes the member name, amount, payment month, payment date, staff member who recorded it, and notes.
+Admins can remove payment records after confirmation. Staff can record payments and edit payment notes, but staff cannot delete payment records.
 
-Admins can remove a payment record after confirming the action. Staff users can record payments and edit notes, but they do not see the remove payment action.
+## 8. Attendance Guide
 
-## Attendance
-
-Attendance is a simple gym visit log. It records when a member checks in.
+Attendance is a simple check-in log for gym visits.
 
 To check in a member:
 
-1. Open Attendance from the dashboard menu.
+1. Open Attendance.
 2. Search for the member by name or phone.
 3. Select the member.
-4. Add an optional note if needed.
+4. Add a note if needed.
 5. Click Check in.
 
-The system records the member, check-in time, notes, and the logged-in user who recorded the visit.
+The app records the member, time, note, and logged-in user who recorded the check-in.
 
-The Attendance page shows today's attendance and recent attendance history. The Members page also has an Attendance button on each member row so staff can quickly view that member's recent check-ins.
+Attendance history is shown on the Attendance page. You can filter it by member name, phone number, and date. The Members page also has an Attendance action to view a member's recent check-ins.
 
-Attendance history can be filtered by member name or phone number and by date. This helps staff find a specific visit without scanning the full history list.
+If a member is inactive or expired, the app shows a warning before check-in. The check-in can still be recorded because some gyms allow exceptions.
 
-If a member is Inactive or Expired, the app shows a warning before check-in. The system still allows staff or admin to record the visit because each gym may handle exceptions differently.
+The same member cannot be checked in again within 10 minutes. This helps prevent accidental duplicate entries.
 
-To prevent accidental double entries, the same member cannot be checked in again within 10 minutes.
+## 9. Search and Filter Guide
 
-Admins can delete attendance records after confirmation. Staff can record and view attendance, but they do not see the delete action.
+Use search boxes to quickly find records.
 
-## User Management
+You can search members by:
 
-The Users page is admin-only.
+- Name.
+- Phone number.
 
-It lists existing app profiles and lets an admin change a profile role between Admin and Staff. The current admin cannot remove their own admin role from this page, which helps prevent accidental lockout.
+You can filter member lists by:
 
-The app does not create login accounts or send invitations. New login accounts should still be created in Supabase Auth, then the matching profile can be managed in the app.
+- Status.
+- Membership plan.
+- Payment state.
+- Payment month.
 
-## Settings
+You can search trainers by name or phone, and filter by status or specialty.
 
-The Settings page is admin-only. It gives admins a simple place to open user role management and review the access rules used by the app.
+You can filter payments by month and paid or unpaid state.
 
-## Troubleshooting
+You can filter attendance by member search and date.
 
-If something does not work, try these steps first:
+## 10. Maintenance Guide
 
-1. Refresh the page.
-2. Check that the internet connection is working.
-3. Sign out and sign in again.
-4. Confirm the user has the correct role.
-5. Ask the administrator to check that the user has a matching profile.
+Regular maintenance tasks:
 
-Common messages:
+- Update membership prices from the Plans page.
+- Update member phone, email, address, notes, plan, and status from the Members page.
+- Deactivate old members instead of deleting them when you want to keep history.
+- Deactivate old trainers instead of deleting them when you want to keep history.
+- Review pending payments every month.
+- Review expiry alerts daily or weekly.
 
-- "The email or password is not correct" means the login details do not match a Supabase Auth account.
-- "This account does not have an app profile yet" means the login exists, but the app profile row is missing.
-- "You do not have permission" means the user role is not allowed to do that action.
-- "A record with these details already exists" means the same plan, payment, or assignment may already be saved.
-- "Refresh the page and try again" usually means the app could not confirm the latest database state.
+Do not change these without a developer:
 
-For form errors, check the highlighted field. Phone numbers, dates, prices, statuses, and roles must be entered in the expected format before saving.
+- Supabase database tables.
+- Supabase security policies.
+- Vercel environment variables.
+- Source code files.
+- Auth account IDs or database IDs.
+- Production database migrations.
 
-If the problem continues, the administrator should check Supabase project settings, environment variables, and the database migrations.
+## 11. Customization Guide
 
-## Current Next Step
+App name:
 
-The next step is to prepare deployment documentation and Supabase setup steps for production use.
+- The browser title is in `src/app/layout.tsx`.
+- Sidebar and login screen text is in `src/components/layout/dashboard-shell.tsx` and `src/app/(auth)/login/page.tsx`.
+
+Logo:
+
+- The current app uses text branding, not an uploaded gym logo.
+- If a logo is added later, it should be placed in `public` and connected in the layout or login page by a developer.
+
+Colors:
+
+- Main colors are in `src/app/globals.css`.
+- Change colors carefully because contrast and readability matter.
+- Ask a developer to check mobile screens after color changes.
+
+Plan prices:
+
+- Admins can change plan prices from the Plans page.
+- Existing member records keep their selected plan, but payment amounts are based on the current plan price shown in the app.
+
+Expiry alert days:
+
+- The Dashboard starts with 7 alert days.
+- Users can change the alert window directly on the Dashboard from 1 to 60 days.
+- The default value is currently set in `src/features/dashboard/dashboard-view.tsx`.
+
+## 12. Troubleshooting
+
+Cannot log in:
+
+- Check the email and password.
+- Confirm the user exists in Supabase Auth.
+- Confirm the user has a matching profile row in the app database.
+- Confirm Supabase environment variables are set correctly.
+
+Member not showing:
+
+- Clear search text and filters.
+- Check the member status filter.
+- Check whether the member was deleted.
+- Refresh the page.
+
+Payment not showing:
+
+- Check the selected payment month.
+- Change the filter to All.
+- Search by member name or phone.
+- Confirm the payment was saved successfully.
+
+Wrong expiry date:
+
+- Check the member start date.
+- Check the selected membership plan.
+- Check the plan duration in months.
+- Edit and save the member if the wrong plan or start date was selected.
+
+Staff cannot access something:
+
+- This may be correct. Staff users have limited access.
+- Ask an Admin to perform admin-only actions such as editing members, managing plans, managing trainers, deleting records, or changing roles.
+
+Supabase or Vercel environment variable issues:
+
+- Check `NEXT_PUBLIC_SUPABASE_URL`.
+- Check `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Check `SUPABASE_SERVICE_ROLE_KEY` if server admin actions need it.
+- Make sure the same values are set in Vercel project settings for production.
+- Redeploy the app after changing Vercel environment variables.
+
+## 13. Developer Handover
+
+Tech stack:
+
+- Next.js 16 App Router.
+- TypeScript.
+- Tailwind CSS 4.
+- shadcn/ui.
+- Supabase Auth and Postgres with RLS.
+- TanStack Query.
+- React Hook Form.
+- Zod.
+- date-fns.
+- Vercel hosting.
+
+Main folder structure:
+
+- `src/app`: routes, layouts, global styles, dashboard pages, auth pages.
+- `src/components`: shared layout and UI components.
+- `src/components/ui`: shadcn/ui components.
+- `src/features`: feature modules for members, trainers, plans, payments, attendance, dashboard, auth, and users.
+- `src/lib`: Supabase helpers, auth helpers, validation helpers, error helpers.
+- `src/types`: database types.
+- `supabase/migrations`: database schema and RLS migrations.
+- `supabase/seed.sql`: development seed data.
+
+Environment variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anon public key.
+- `SUPABASE_SERVICE_ROLE_KEY`: server-only key for admin operations.
+- `SUPABASE_DB_PASSWORD`: optional local Supabase CLI value.
+- `SUPABASE_PROJECT_ID`: optional local Supabase CLI value.
+
+Database tables:
+
+- `profiles`.
+- `membership_plans`.
+- `members`.
+- `trainers`.
+- `trainer_member_assignments`.
+- `payments`.
+- `attendance_logs`.
+
+Deployment notes:
+
+- Apply Supabase migrations before using the app in production.
+- Enable and keep RLS policies in Supabase.
+- Create Supabase Auth users manually.
+- Ensure each Auth user has a matching `profiles` row.
+- Set environment variables in Vercel.
+- Deploy from the production branch.
+- Run lint, typecheck, and build before release.
+
+Common commands:
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run typecheck
+npm run build
+npm run format
+```
