@@ -24,7 +24,7 @@ The database design has also been added. It stores gym members, trainers, member
 
 The login screen and protected dashboard layout have also been added. After signing in, users see the main app navigation and the first working management pages.
 
-Membership Plans, Members, Trainers, and Payments now have real tables and forms. Attendance is still a placeholder and will be added in the next phase.
+Membership Plans, Members, Trainers, Payments, and Attendance now have real tables and forms.
 
 ## Basic Project Organization
 
@@ -185,6 +185,28 @@ Payment history shows recent payment records across all months. It includes the 
 
 Admins can remove a payment record after confirming the action. Staff users can record payments and edit notes, but they do not see the remove payment action.
 
+## Attendance
+
+Attendance is a simple gym visit log. It records when a member checks in.
+
+To check in a member:
+
+1. Open Attendance from the dashboard menu.
+2. Search for the member by name or phone.
+3. Select the member.
+4. Add an optional note if needed.
+5. Click Check in.
+
+The system records the member, check-in time, notes, and the logged-in user who recorded the visit.
+
+The Attendance page shows today's attendance and recent attendance history. The Members page also has an Attendance button on each member row so staff can quickly view that member's recent check-ins.
+
+If a member is Inactive or Expired, the app shows a warning before check-in. The system still allows staff or admin to record the visit because each gym may handle exceptions differently.
+
+To prevent accidental double entries, the same member cannot be checked in again within 10 minutes.
+
+Admins can delete attendance records after confirmation. Staff can record and view attendance, but they do not see the delete action.
+
 ## Current Next Step
 
-The next step is to build basic attendance check-in and connect dashboard cards to live totals.
+The next step is to connect dashboard cards to live totals and add real search/filter controls where placeholders remain.
