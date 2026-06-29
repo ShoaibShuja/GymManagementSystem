@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Final documentation and handover pass.
+Production deployment readiness pass.
 
 ## Final Feature Status
 
@@ -33,6 +33,10 @@ Complete:
 - Production UI polish across the main app.
 - Beginner client documentation.
 - Practical developer README and handover notes.
+- Vercel deployment documentation.
+- Supabase production setup checklist.
+- First admin setup documentation.
+- `.env.example` verified with placeholder values only.
 
 Not included by design:
 
@@ -158,6 +162,21 @@ Not included by design:
 - `README.md` expanded with setup, environment, Supabase, and deployment instructions.
 - `PROJECT_STATE.md` updated with final status, completed phases, limitations, and optional next improvements.
 
+### Phase 12: Deployment Readiness
+
+- `.env.example` reviewed and kept free of secrets.
+- `.gitignore` updated so real env files stay ignored while `.env.example` can be committed.
+- Required Supabase variables documented.
+- Local and production environment setup documented.
+- Supabase production checklist documented.
+- Seed data strategy documented.
+- RLS requirement documented.
+- Supabase Auth redirect URL checklist documented.
+- First admin user setup documented.
+- Vercel framework, install, build, and environment settings documented.
+- Production verification checklist added.
+- Client hosting explanation added in beginner-friendly language.
+
 ## Installed Packages
 
 - `@supabase/supabase-js`
@@ -216,6 +235,79 @@ Not included by design:
 - `supabase/migrations/202606290002_finalize_role_access.sql`: final role access tightening for member, profile, and attendance RLS.
 - `supabase/seed.sql`: development seed data.
 
+## Deployment Readiness Status
+
+Status: Ready for production deployment after final environment setup in Supabase and Vercel.
+
+Verified in repository:
+
+- Build script exists: `npm run build`.
+- Start script exists: `npm run start`.
+- Lint script exists: `npm run lint`.
+- Typecheck script exists: `npm run typecheck`.
+- `.env.example` uses placeholder values only.
+- `.env.local` is ignored and not committed.
+- No application `console.log` statements were found in `src`.
+- Protected routes are implemented with server-side auth checks.
+- Login redirects are implemented for signed-in and signed-out users.
+- Role-based settings access is protected server-side.
+
+Production setup still required outside the repository:
+
+- Create or choose the production Supabase project.
+- Apply migrations in order.
+- Configure Supabase Auth Site URL and redirect URLs.
+- Create the first Supabase Auth admin user.
+- Insert the first matching `profiles` row with role `admin`.
+- Add production environment variables in Vercel.
+- Deploy from the intended production branch.
+- Smoke test the production URL.
+
+## Production Checklist
+
+Environment:
+
+- `NEXT_PUBLIC_SUPABASE_URL` set in Vercel.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` set in Vercel.
+- `SUPABASE_SERVICE_ROLE_KEY` set in Vercel as a private server-side value.
+- Real env files are not committed.
+- Local `.env.local` and Vercel production env values point to the intended Supabase projects.
+
+Supabase:
+
+- Schema migrations applied.
+- RLS enabled on all app tables.
+- Development seed data skipped for production unless explicitly wanted.
+- Email/password auth enabled.
+- Public signup remains disabled unless intentionally changed.
+- Production Site URL set.
+- Production redirect URL set.
+- Local redirect URL retained for development.
+- First admin Auth user created.
+- First admin `profiles` row inserted.
+
+Vercel:
+
+- Framework preset: Next.js.
+- Install command: `npm install`.
+- Build command: `npm run build`.
+- Output directory: Vercel default for Next.js.
+- Required env vars configured.
+- Project redeployed after env var changes.
+
+App smoke tests:
+
+- Logged-out root redirects to login.
+- Signed-in user reaches dashboard.
+- Admin can open Settings and Users.
+- Staff cannot open admin settings.
+- Members page loads.
+- Payments page loads.
+- Attendance check-in flow loads.
+- Dashboard cards load.
+- Mobile sidebar opens and closes.
+- Production data is coming from the production Supabase project.
+
 ## Known Limitations
 
 - No public signup page.
@@ -243,9 +335,17 @@ Not included by design:
 - Add backup and restore documentation for the production Supabase database.
 - Add production monitoring and error reporting.
 
+## Remaining Final Audit Tasks
+
+- Manually test production Supabase Auth redirect URLs after Vercel deployment.
+- Manually test first admin login after creating the production admin profile.
+- Manually test staff restrictions with a real staff profile.
+- Review the app on one mobile viewport after deployment.
+- Confirm the production database does not contain unwanted seed/demo data.
+
 ## Verification
 
-Recent successful checks before this documentation pass:
+Successful checks during the deployment readiness pass:
 
 ```bash
 npm run lint
@@ -253,4 +353,12 @@ npm run typecheck
 npm run build
 ```
 
-Documentation-only changes do not require a production build, but lint and typecheck should still be run before the final handoff if code changes are added later.
+Result: all passed.
+
+Additional repository checks:
+
+- `.env.example` contains placeholders only.
+- `.env.local` is ignored by git.
+- No application `console.log` statements were found in `src`.
+- Local production server check confirmed `/dashboard` redirects to `/login` for logged-out users.
+- Local production server check confirmed `/login` returns 200.
