@@ -232,3 +232,4 @@ After changing environment variables in Vercel, redeploy the app.
 
 - Client and handover guide: `CLIENT_DOCUMENTATION.md`
 - Current build state: `PROJECT_STATE.md`
+- Version 1 release notes: `RELEASE_NOTES.md`

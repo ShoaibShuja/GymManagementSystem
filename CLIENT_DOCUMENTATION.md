@@ -1,5 +1,7 @@
 # Client Documentation
 
+Version 1 status: ready for production launch after the developer connects the production Supabase project, deploys to Vercel, creates the first Admin user, and completes the final live smoke test.
+
 ## 1. Project Overview
 
 The Gym Management System is a simple web app for running a small gym. It helps the owner and staff keep daily gym records in one place instead of using paper notebooks or scattered spreadsheets.
