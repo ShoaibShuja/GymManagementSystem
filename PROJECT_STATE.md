@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Production deployment readiness pass.
+Version 1 final production audit complete.
 
 ## Final Feature Status
 
@@ -37,6 +37,8 @@ Complete:
 - Supabase production setup checklist.
 - First admin setup documentation.
 - `.env.example` verified with placeholder values only.
+- Final Version 1 release notes.
+- Final production audit completed.
 
 Not included by design:
 
@@ -177,6 +179,17 @@ Not included by design:
 - Production verification checklist added.
 - Client hosting explanation added in beginner-friendly language.
 
+### Phase 13: Version 1 Final Audit
+
+- Full feature audit completed for auth, dashboard, members, trainers, assignments, plans, payments, attendance, filters, expiry alerts, and role access.
+- Scope audit confirmed avoided features were not implemented.
+- Security audit confirmed RLS migrations, protected routes, role guards, env documentation, and no committed secrets.
+- UI audit reviewed desktop sidebar, mobile navigation, responsive cards, forms, tables, dialogs, loading states, empty states, and error states.
+- Data audit reviewed expiry calculation, payment status calculation, attendance logs, trainer assignments, and plan price/duration behavior.
+- Documentation audit reviewed README, client documentation, project state, and `.env.example`.
+- Removed obsolete `src/features/.gitkeep` placeholder.
+- Added `RELEASE_NOTES.md`.
+
 ## Installed Packages
 
 - `@supabase/supabase-js`
@@ -237,7 +250,9 @@ Not included by design:
 
 ## Deployment Readiness Status
 
-Status: Ready for production deployment after final environment setup in Supabase and Vercel.
+Status: Version 1 is production-ready as a codebase.
+
+Production launch still requires real Supabase and Vercel setup, first admin creation, and smoke testing against the production URL.
 
 Verified in repository:
 
@@ -322,6 +337,61 @@ App smoke tests:
 - No test framework is installed.
 - Database types are manual and can be replaced with generated Supabase types later.
 
+## Version 1 Audit Summary
+
+Feature audit:
+
+- Auth: passed. Login, logout, profile requirement, and redirects are implemented.
+- Dashboard: passed. Live totals, pending payments, collected payments, attendance count, and expiry alerts are implemented.
+- Members: passed. Admin add/edit/delete and staff read-only behavior are implemented.
+- Trainers: passed. Admin trainer management and staff read-only behavior are implemented.
+- Trainer assignments: passed. Admin assignment and removal are implemented.
+- Membership plans: passed. Admin create/edit/deactivate and staff view are implemented.
+- Payment tracking: passed. Manual payment recording, payment history, notes, filters, and admin delete are implemented.
+- Attendance: passed. Check-ins, duplicate prevention, history, filters, and admin delete are implemented.
+- Search and filters: passed across members, trainers, plans, payments, and attendance.
+- Expiry alerts: passed with a user-adjustable 1 to 60 day alert window.
+- Role-based access: passed at UI, server action, route, and RLS levels.
+
+Scope audit:
+
+- No online payment gateway found.
+- No SMS or email marketing found.
+- No inventory management found.
+- No e-commerce found.
+- No booking or calendar sync found.
+- No multi-location support found.
+- No native mobile app found.
+- No workout or diet builder found.
+- No in-app chat found.
+- No complex analytics or BI dashboards found.
+
+Security audit:
+
+- RLS is enabled in migrations for all app tables.
+- Unauthenticated dashboard users are redirected to login.
+- Staff restrictions are implemented in UI, server actions, and final RLS migration.
+- Admin actions are guarded in server actions and admin routes.
+- No real secrets were found in committed files.
+- Environment variables are documented in README, client documentation, and `.env.example`.
+
+UI audit:
+
+- Desktop layout uses a fixed sidebar and constrained content width.
+- Tablet and mobile layouts use responsive grids, wrapped actions, scrollable tables, and mobile navigation.
+- Forms use React Hook Form and Zod validation.
+- Tables use horizontal overflow protection.
+- Dialogs have mobile max-height and overflow handling.
+- Empty, loading, and error states are present across core feature pages.
+
+Data audit:
+
+- Member expiry dates are calculated from start date plus plan duration minus one day.
+- Payment status is calculated from member/month payment records.
+- Attendance logs store member, check-in time, notes, and recorded-by profile.
+- Trainer assignments use a dedicated join table with uniqueness protection.
+- Plan price affects payment amount due and plan duration affects membership expiry.
+
 ## Next Optional Improvements
 
 - Add a small test setup for critical calculations and server actions.
@@ -345,7 +415,7 @@ App smoke tests:
 
 ## Verification
 
-Successful checks during the deployment readiness pass:
+Successful checks during the Version 1 final audit:
 
 ```bash
 npm run lint
